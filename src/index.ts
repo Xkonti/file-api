@@ -24,7 +24,6 @@ const app = new Elysia()
     })
 
     .get("list", async ({ query, set }) => {
-        // Extract path
         const relativePath: string | null = query.path ? atob(query.path as string) : null;
 
         // TODO: Add proper checks for path validity
@@ -34,9 +33,9 @@ const app = new Elysia()
         }
 
         const includeDirectories = query.dirs === 'true';
-
         const depth = query.depth === undefined ? 1 : parseInt(query.depth as string);
         const directoryPath = join(process.env.DATA_DIR as string, relativePath);
+
         const entries = await readDirectoryContents(directoryPath, relativePath, depth);
 
         // Handle the occurrence of an error
