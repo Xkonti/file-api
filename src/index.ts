@@ -16,7 +16,7 @@ const app = new Elysia()
     })
 
     // Handle the unauthorized error
-    .onError(({ code, error, set }) => {
+    .onError(({ error, set }) => {
         if (error.message === 'unauthorized') {
             set.status = 401;
             return 'Unauthorized';
@@ -24,8 +24,6 @@ const app = new Elysia()
     })
 
     .get("list", async ({ query, set }) => {
-        console.log("Query: ", query);
-
         // Extract path
         const relativePath: string | null = query.path ? atob(query.path as string) : null;
 
@@ -38,7 +36,6 @@ const app = new Elysia()
         const includeDirectories = query.dirs === 'true';
 
         const depth = query.depth === undefined ? 1 : parseInt(query.depth as string);
-        console.log("Depth: ", depth);
         const directoryPath = join(process.env.DATA_DIR as string, relativePath);
         const entries = await readDirectoryContents(directoryPath, relativePath, depth);
 
