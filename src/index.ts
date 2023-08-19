@@ -8,7 +8,7 @@ const app = new Elysia()
     .onRequest(({ request }) => {
         let apiKey = request.headers.get('apikey');
         if (apiKey == null) {
-            apiKey = new URLSearchParams(request.url).get('apikey');
+            apiKey = new URL(request.url).searchParams.get('apikey');
         }
         if (apiKey !== process.env.API_KEY) {
             throw new Error('unauthorized');
