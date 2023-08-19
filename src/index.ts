@@ -6,7 +6,10 @@ const app = new Elysia()
 
     // Verify API key before handling any requests
     .onRequest(({ request }) => {
-        const apiKey = request.headers.get('apikey');
+        let apiKey = request.headers.get('apikey');
+        if (apiKey == null) {
+            apiKey = new URLSearchParams(request.url).get('apikey');
+        }
         if (apiKey !== process.env.API_KEY) {
             throw new Error('unauthorized');
         }
@@ -14,7 +17,6 @@ const app = new Elysia()
 
     // Handle the unauthorized error
     .onError(({ code, error, set }) => {
-        console.log('Code', code);
         if (error.message === 'unauthorized') {
             set.status = 401;
             return 'Unauthorized';
