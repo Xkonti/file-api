@@ -31,7 +31,7 @@ A simple RESTful API that allows you to manipulate files and directories.
 
 ### Permissions
 
-- [ ] API key authentication
+- [x] API key authentication
 - [ ] Protect paths with API keys
 - [ ] Protect operation categories with API keys
     - [ ] Listing files and directories

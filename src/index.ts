@@ -3,6 +3,24 @@ import { join } from "path";
 import { flattenFiles, readDirectoryContents } from "./utils/directoryUtils";
 
 const app = new Elysia()
+
+    // Verify API key before handling any requests
+    .onRequest(({ request }) => {
+        const apiKey = request.headers.get('apikey');
+        if (apiKey !== process.env.API_KEY) {
+            throw new Error('unauthorized');
+        }
+    })
+
+    // Handle the unauthorized error
+    .onError(({ code, error, set }) => {
+        console.log('Code', code);
+        if (error.message === 'unauthorized') {
+            set.status = 401;
+            return 'Unauthorized';
+        }
+    })
+
     .get("list", async ({ query, set }) => {
         console.log("Query: ", query);
 
