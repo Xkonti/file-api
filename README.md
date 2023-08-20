@@ -1,4 +1,4 @@
-# file-api
+# File API
 A simple RESTful API that allows you to manipulate files and directories.
 
 > [!WARNING]
@@ -8,6 +8,19 @@ A simple RESTful API that allows you to manipulate files and directories.
 > 💀 There are no robust protections against malicious users. This API is intended to be used as an internal API for simple projects. Usage of a service mesh that encrypts traffic between services is recommended.
 
 # Usage
+
+## Running in Docker
+
+The easiest way to run the File API is to use the Docker image. The image is available on [Docker Hub](https://hub.docker.com/r/xkonti/file-api):
+
+```bash
+docker run -d -p 3210:3000 -e API_KEY=YOUR_API_KEY -v /your/directory/to/mount:/data file-api:latest
+```
+
+Available configuration options:
+- Internal port: `3000`
+- Mount point for the directory to be managed via API: `/data`
+- `API_KEY` environment variable: the API key to use for authentication
 
 ## Authentication
 
@@ -198,7 +211,7 @@ You can list files and/or directories by using the `/list` endpoint with the fol
 
 ### Deployment
 
-- [ ] Docker image on Docker Hub
+- [x] Docker image on Docker Hub
 - [ ] Docker image on GitHub Container Registry
 - [ ] CI/CD pipeline using GitHub Actions and Dagger
 
