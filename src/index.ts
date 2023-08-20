@@ -3,11 +3,27 @@ import { join } from "path";
 import { flattenFiles, readDirectoryContents } from "./utils/directoryUtils";
 
 const app = new Elysia()
-    .get("list", async ({ query, set }) => {
-        console.log("Query: ", query);
+    // Verify API key before handling any requests
+    .onRequest(({ request }) => {
+        let apiKey = request.headers.get('apikey');
+        if (apiKey == null) {
+            apiKey = new URL(request.url).searchParams.get('apikey');
+        }
+        if (apiKey !== process.env.API_KEY) {
+            throw new Error('unauthorized');
+        }
+    })
 
-        // Extract path
-        const relativePath: string | null = query.path ? atob(query.path as string) : null;
+    // Handle the unauthorized error
+    .onError(({ error, set }) => {
+        if (error.message === 'unauthorized') {
+            set.status = 401;
+            return 'Unauthorized';
+        }
+    })
+
+    .get("list", async ({ query, set }) => {
+        const relativePath = query.path ? query.path as string : null;
 
         // TODO: Add proper checks for path validity
         if (relativePath == null || relativePath.includes('..')) {
@@ -16,10 +32,9 @@ const app = new Elysia()
         }
 
         const includeDirectories = query.dirs === 'true';
-
         const depth = query.depth === undefined ? 1 : parseInt(query.depth as string);
-        console.log("Depth: ", depth);
         const directoryPath = join(process.env.DATA_DIR as string, relativePath);
+      
         const entries = await readDirectoryContents(directoryPath, relativePath, depth);
 
         // Handle the occurrence of an error
