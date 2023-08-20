@@ -24,7 +24,7 @@ const app = new Elysia()
     })
 
     .get("list", async ({ query, set }) => {
-        const relativePath: string | null = query.path ? atob(query.path as string) : null;
+        const relativePath = query.path ? query.path as string : null;
 
         // TODO: Add proper checks for path validity
         if (relativePath == null || relativePath.includes('..')) {
