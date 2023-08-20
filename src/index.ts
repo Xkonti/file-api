@@ -3,7 +3,6 @@ import { join } from "path";
 import { flattenFiles, readDirectoryContents } from "./utils/directoryUtils";
 
 const app = new Elysia()
-
     // Verify API key before handling any requests
     .onRequest(({ request }) => {
         let apiKey = request.headers.get('apikey');
@@ -35,7 +34,7 @@ const app = new Elysia()
         const includeDirectories = query.dirs === 'true';
         const depth = query.depth === undefined ? 1 : parseInt(query.depth as string);
         const directoryPath = join(process.env.DATA_DIR as string, relativePath);
-
+      
         const entries = await readDirectoryContents(directoryPath, relativePath, depth);
 
         // Handle the occurrence of an error

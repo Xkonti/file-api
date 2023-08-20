@@ -160,9 +160,7 @@ You can list files and/or directories by using the `/list` endpoint with the fol
     }
   ]
   ```
-
 </details>
-
 
 ## Roadmap
 
