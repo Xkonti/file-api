@@ -1,6 +1,43 @@
 import {describe, expect, test} from 'bun:test';
-import {flattenFiles, listSorterByPath} from './directoryUtils';
-import {getFakeTree} from './testingUtils.test';
+import {flattenFiles, listSorterByPath, readDirectoryContents} from './directoryUtils';
+import {
+  getFakeTree,
+  testingDirectoryPath,
+  testingDirectoryRelativePath,
+  testingDirectoryTreeDepth1,
+  testingDirectoryTreeDepth2,
+  testingDirectoryTreeDepth3,
+} from './testingUtils.test';
+
+describe('readDirectoryContents()', () => {
+  test('should return proper depth 1 tree', async () => {
+    const actualTree = await readDirectoryContents(
+      testingDirectoryPath,
+      testingDirectoryRelativePath,
+      1,
+    );
+    // Use only toEqual() as we don't care about the contents to be undefined. It isn't serialized to JSON.
+    expect(actualTree).toEqual(testingDirectoryTreeDepth1);
+  });
+  test('should return proper depth 2 tree', async () => {
+    const actualTree = await readDirectoryContents(
+      testingDirectoryPath,
+      testingDirectoryRelativePath,
+      2,
+    );
+    // Use only toEqual() as we don't care about the contents to be undefined. It isn't serialized to JSON.
+    expect(actualTree).toEqual(testingDirectoryTreeDepth2);
+  });
+  test('should return proper depth 3 tree', async () => {
+    const actualTree = await readDirectoryContents(
+      testingDirectoryPath,
+      testingDirectoryRelativePath,
+      3,
+    );
+    // Use only toEqual() as we don't care about the contents to be undefined. It isn't serialized to JSON.
+    expect(actualTree).toEqual(testingDirectoryTreeDepth3);
+  });
+});
 
 describe('flattenFiles()', () => {
   test('including directories should return a list of only files', () => {

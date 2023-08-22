@@ -92,3 +92,110 @@ export function getFakeTree(
 
   return {tree, flatList, flatListNoDirs};
 }
+
+export const testingDirectoryPath = './testdir';
+export const testingDirectoryRelativePath = '/testdir';
+
+export const testingDirectoryTreeDepth1 = [
+  {
+    name: 'file1.empty',
+    fullPath: '/testdir/file1.empty',
+    type: 'file',
+  },
+  {
+    name: 'file2.empty',
+    fullPath: '/testdir/file2.empty',
+    type: 'file',
+  },
+  {
+    name: 'dir2',
+    fullPath: '/testdir/dir2',
+    type: 'dir',
+  },
+  {
+    name: 'dir1',
+    fullPath: '/testdir/dir1',
+    type: 'dir',
+  },
+];
+
+export const testingDirectoryTreeDepth2 = [
+  {
+    name: 'file1.empty',
+    fullPath: '/testdir/file1.empty',
+    type: 'file',
+  },
+  {
+    name: 'file2.empty',
+    fullPath: '/testdir/file2.empty',
+    type: 'file',
+  },
+  {
+    name: 'dir2',
+    fullPath: '/testdir/dir2',
+    type: 'dir',
+    contents: [
+      {
+        name: 'dir3',
+        fullPath: '/testdir/dir2/dir3',
+        type: 'dir',
+      },
+    ],
+  },
+  {
+    name: 'dir1',
+    fullPath: '/testdir/dir1',
+    type: 'dir',
+    contents: [
+      {
+        name: 'file3.empty',
+        fullPath: '/testdir/dir1/file3.empty',
+        type: 'file',
+      },
+    ],
+  },
+];
+
+export const testingDirectoryTreeDepth3 = [
+  {
+    name: 'file1.empty',
+    fullPath: '/testdir/file1.empty',
+    type: 'file',
+  },
+  {
+    name: 'file2.empty',
+    fullPath: '/testdir/file2.empty',
+    type: 'file',
+  },
+  {
+    name: 'dir2',
+    fullPath: '/testdir/dir2',
+    type: 'dir',
+    contents: [
+      {
+        name: 'dir3',
+        fullPath: '/testdir/dir2/dir3',
+        type: 'dir',
+        contents: [
+          {
+            name: 'file4.empty',
+            fullPath: '/testdir/dir2/dir3/file4.empty',
+            type: 'file',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    name: 'dir1',
+    fullPath: '/testdir/dir1',
+    type: 'dir',
+    contents: [
+      {
+        name: 'file3.empty',
+        fullPath: '/testdir/dir1/file3.empty',
+        type: 'file',
+      },
+    ],
+  },
+];

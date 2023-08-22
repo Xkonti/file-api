@@ -12,7 +12,7 @@ export type DirectoryEntry = {
 /**
  * Reads the contents of a directory and returns a list of directory entries in a tree structure.
  * @param directoryPath Path to the directory to read
- * @param relativePath Relative path to the directory from the root of the data directory that the server is serving
+ * @param relativePath Relative path to the directory from the root of the data directory that the server is serving. This is used to generate the full path of the directory entries.
  * @param depth Depth to read the directory to. 1 means only the contents of the directory itself, 2 means the contents of the directory and the contents of the directories inside the directory, etc.
  * @returns Returns a list of directory entries, or a string if there was an error
  */
