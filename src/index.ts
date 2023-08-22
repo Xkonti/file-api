@@ -39,7 +39,7 @@ const app = new Elysia()
 
     // Handle the occurrence of an error
     if (typeof entries === 'string') {
-      if (entries === 'no-path') {
+      if (entries === 'no-path' || entries === 'no-dir') {
         set.status = 400;
         return 'You must provide a valid path to a directory';
       }

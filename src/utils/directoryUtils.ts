@@ -26,12 +26,14 @@ export async function readDirectoryContents(
   try {
     rawEntries = await readdir(directoryPath, {withFileTypes: true});
   } catch (error) {
-    const typedError = error as {message: string};
-    console.error('Error when getting directory contents: ', typedError.message);
-    if (typedError.message.toLowerCase().includes('no such file or directory')) {
+    const message = (error as {message: string}).message.toLowerCase();
+    console.error('Error when getting directory contents: ', message);
+    if (message.includes('no such file or directory')) {
       return 'no-path';
+    } else if (message.includes('not a directory')) {
+      return 'no-dir';
     }
-    return `error: ${typedError.message}`;
+    return `error: ${message}`;
   }
 
   const entries: DirectoryEntry[] = [];
