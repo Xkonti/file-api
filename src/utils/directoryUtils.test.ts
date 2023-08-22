@@ -17,31 +17,40 @@ import {
 
 describe('readDirectoryContents()', () => {
   test('should return proper depth 1 tree', async () => {
-    const actualTree = await readDirectoryContents(
+    const actualTree = (await readDirectoryContents(
       testingDirectoryPath,
       testingDirectoryRelativePath,
       1,
-    );
+    )) as DirectoryEntry[];
+    // Flatten and sort to make sure the contents are the same
+    const actualList = flattenFiles(actualTree, false).sort(listSorterByPath);
+    const expectedList = flattenFiles(testingDirectoryTreeDepth1, false).sort(listSorterByPath);
     // Use only toEqual() as we don't care about the contents to be undefined. It isn't serialized to JSON.
-    expect(actualTree).toEqual(testingDirectoryTreeDepth1);
+    expect(actualList).toEqual(expectedList);
   });
   test('should return proper depth 2 tree', async () => {
-    const actualTree = await readDirectoryContents(
+    const actualTree = (await readDirectoryContents(
       testingDirectoryPath,
       testingDirectoryRelativePath,
       2,
-    );
+    )) as DirectoryEntry[];
+    // Flatten and sort to make sure the contents are the same
+    const actualList = flattenFiles(actualTree, false).sort(listSorterByPath);
+    const expectedList = flattenFiles(testingDirectoryTreeDepth2, false).sort(listSorterByPath);
     // Use only toEqual() as we don't care about the contents to be undefined. It isn't serialized to JSON.
-    expect(actualTree).toEqual(testingDirectoryTreeDepth2);
+    expect(actualList).toEqual(expectedList);
   });
   test('should return proper depth 3 tree', async () => {
-    const actualTree = await readDirectoryContents(
+    const actualTree = (await readDirectoryContents(
       testingDirectoryPath,
       testingDirectoryRelativePath,
       3,
-    );
+    )) as DirectoryEntry[];
+    // Flatten and sort to make sure the contents are the same
+    const actualList = flattenFiles(actualTree, false).sort(listSorterByPath);
+    const expectedList = flattenFiles(testingDirectoryTreeDepth3, false).sort(listSorterByPath);
     // Use only toEqual() as we don't care about the contents to be undefined. It isn't serialized to JSON.
-    expect(actualTree).toEqual(testingDirectoryTreeDepth3);
+    expect(actualList).toEqual(expectedList);
   });
   test('should return "no-path" when invalid path', async () => {
     const actualTree = await readDirectoryContents(`${testingDirectoryPath}/invalid/path`, '/', 1);

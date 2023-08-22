@@ -52,7 +52,7 @@ const app = new Elysia()
     // We still need to include the contents of the directories though
     let result = entries;
     if (!includeDirectories) {
-      result = flattenFiles(entries);
+      result = flattenFiles(entries, true);
     }
 
     return result;

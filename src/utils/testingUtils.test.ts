@@ -96,7 +96,7 @@ export function getFakeTree(
 export const testingDirectoryPath = './testdir';
 export const testingDirectoryRelativePath = '/testdir';
 
-export const testingDirectoryTreeDepth1 = [
+export const testingDirectoryTreeDepth1: DirectoryEntry[] = [
   {
     name: 'file1.empty',
     fullPath: '/testdir/file1.empty',
@@ -119,7 +119,7 @@ export const testingDirectoryTreeDepth1 = [
   },
 ];
 
-export const testingDirectoryTreeDepth2 = [
+export const testingDirectoryTreeDepth2: DirectoryEntry[] = [
   {
     name: 'file1.empty',
     fullPath: '/testdir/file1.empty',
@@ -156,7 +156,7 @@ export const testingDirectoryTreeDepth2 = [
   },
 ];
 
-export const testingDirectoryTreeDepth3 = [
+export const testingDirectoryTreeDepth3: DirectoryEntry[] = [
   {
     name: 'file1.empty',
     fullPath: '/testdir/file1.empty',
