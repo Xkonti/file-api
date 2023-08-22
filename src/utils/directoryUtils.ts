@@ -66,13 +66,21 @@ export async function readDirectoryContents(
  * @param entries List of directory & file entries
  * @returns Returns a list of file entries
  */
-export function flattenFiles(entries: DirectoryEntry[]): DirectoryEntry[] {
-    return entries.reduce((acc: DirectoryEntry[], curr: DirectoryEntry) => {
-        if (curr.type === 'file') {
-            return [...acc, curr];
-        } else if (curr.type === 'dir' && curr.contents) {
-            return [...acc, ...flattenFiles(curr.contents)];
-        }
-        return acc;
-    }, []);
-};
+export function flattenFiles(entries: DirectoryEntry[], excludeDirs: boolean): DirectoryEntry[] {
+  return entries.reduce((acc: DirectoryEntry[], curr: DirectoryEntry) => {
+    if (curr.type === 'file') {
+      return [...acc, curr];
+    } else if (curr.type === 'dir' && curr.contents) {
+      if (!excludeDirs) {
+        const currentNoContents = {
+          name: curr.name,
+          fullPath: curr.fullPath,
+          type: curr.type,
+        };
+        return [...acc, currentNoContents, ...flattenFiles(curr.contents, excludeDirs)];
+      }
+      return [...acc, ...flattenFiles(curr.contents, excludeDirs)];
+    }
+    return acc;
+  }, []);
+}
