@@ -84,3 +84,25 @@ export function flattenFiles(entries: DirectoryEntry[], excludeDirs: boolean): D
     return acc;
   }, []);
 }
+
+/**
+ * Sorts a list of file/directory entries. Directories are sorted first, files are sorted second by full path.
+ */
+export function listSorterByType(a: DirectoryEntry, b: DirectoryEntry): number {
+  // Directories first
+  if (a.type === 'dir' && b.type === 'file') return -1;
+  if (a.type === 'file' && b.type === 'dir') return 1;
+
+  // Then sort by full path
+  return listSorterByPath(a, b);
+}
+
+/**
+ * Sorts a list of file/directory entries. Everything is sorted by full path.
+ */
+export function listSorterByPath(a: DirectoryEntry, b: DirectoryEntry): number {
+  // Then sort by full path
+  if (a.fullPath < b.fullPath) return -1;
+  if (a.fullPath > b.fullPath) return 1;
+  return 0;
+}
