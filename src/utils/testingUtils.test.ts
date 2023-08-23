@@ -1,4 +1,4 @@
-import {DirectoryEntry} from './directoryUtils';
+import {DirectoryEntry, flattenFiles, listSorterByPath} from './directoryUtils';
 
 let fakeTreeEntryId = 0;
 
@@ -199,3 +199,10 @@ export const testingDirectoryTreeDepth3: DirectoryEntry[] = [
     ],
   },
 ];
+
+/**
+ * Prepares a file/dirs tree for comparison by flattening it and sorting it by path.
+ */
+export function prepTreeForComparison(tree: DirectoryEntry[], excludeDirs: boolean) {
+  return flattenFiles(tree, excludeDirs).sort(listSorterByPath);
+}

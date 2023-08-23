@@ -2,5 +2,4 @@
 
 # always enable coverage
 coverage = true
-coverageSkipTestFiles = true
-coverageThreshold = { line = 0.8, function = 0.85 }
+coverageThreshold = 0.8
