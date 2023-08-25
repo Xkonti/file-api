@@ -8,12 +8,13 @@ import {
 } from './directoryUtils';
 import {
   getFakeTree,
+  loremFileName,
   testingDirectoryPath,
   testingDirectoryRelativePath,
   testingDirectoryTreeDepth1,
   testingDirectoryTreeDepth2,
   testingDirectoryTreeDepth3,
-} from './testingUtils.test';
+} from '../testing/testingUtils.test';
 
 describe('readDirectoryContents()', () => {
   test('should return proper depth 1 tree', async () => {
@@ -57,7 +58,11 @@ describe('readDirectoryContents()', () => {
     expect(actualTree).toBe('no-path');
   });
   test('should return "no-dir" when path to file', async () => {
-    const actualTree = await readDirectoryContents(`${testingDirectoryPath}/file1.empty`, '/', 1);
+    const actualTree = await readDirectoryContents(
+      `${testingDirectoryPath}/${loremFileName}`,
+      '/',
+      1,
+    );
     expect(actualTree).toBe('no-dir');
   });
 });

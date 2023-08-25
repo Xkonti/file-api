@@ -4,13 +4,15 @@ import {setConfig} from '../../utils/config';
 import {RequestBuilder} from '../../utils/requestBuilder';
 import {UrlBuilder} from '../../utils/urlBuilder';
 import {
+  illegalPaths,
+  loremFileName,
   prepTreeForComparison,
   testingDirectoryPath,
   testingDirectoryRelativePath,
   testingDirectoryTreeDepth1,
   testingDirectoryTreeDepth2,
   testingDirectoryTreeDepth3,
-} from '../../utils/testingUtils.test';
+} from '../../testing/testingUtils.test';
 import {DirectoryEntry} from '../../utils/directoryUtils';
 
 function buildListRequest(
@@ -92,6 +94,7 @@ describe('getList()', async () => {
     expect(receivedTree).toEqual(expectedTree);
   });
 
+  // TODO: Move to separate API key tests
   test('should return 401 when no API key', async () => {
     const request = buildListRequest(testingDirectoryPath, true, 1, true);
     const response = await app.handle(request);
@@ -105,7 +108,6 @@ describe('getList()', async () => {
   });
 
   test('should return 400 when illegal path', async () => {
-    const illegalPaths = ['..', '../..', '/hello/../world/../..', './..', './../there'];
     for (const illegalPath of illegalPaths) {
       const request = buildListRequest(illegalPath, true, 1);
       const response = await app.handle(request);
@@ -114,7 +116,7 @@ describe('getList()', async () => {
   });
 
   test('should return 400 when path is not a directory', async () => {
-    const request = buildListRequest(`${testingDirectoryPath}/file1.empty`, true, 1);
+    const request = buildListRequest(`${testingDirectoryPath}/${loremFileName}`, true, 1);
     const response = await app.handle(request);
     expect(response.status).toBe(400);
   });

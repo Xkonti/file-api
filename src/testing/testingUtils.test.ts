@@ -1,4 +1,4 @@
-import {DirectoryEntry, flattenFiles, listSorterByPath} from './directoryUtils';
+import {DirectoryEntry, flattenFiles, listSorterByPath} from '../utils/directoryUtils';
 
 let fakeTreeEntryId = 0;
 
@@ -93,63 +93,75 @@ export function getFakeTree(
   return {tree, flatList, flatListNoDirs};
 }
 
+export const illegalPaths = ['..', '../..', '/hello/../world/../..', './..', './../there.jpg'];
+
 export const testingDirectoryPath = './testdir';
 export const testingDirectoryRelativePath = '/testdir';
 
+export const pathToNowhere = `${testingDirectoryPath}/invalid/path`;
+export const loremFileName = 'file1.lorem';
+export const loremFilePath = `${testingDirectoryPath}/${loremFileName}`;
+export const loremFileContents =
+  'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
+export const emptyFileName = 'file2.empty';
+export const emptyFilePath = `${testingDirectoryPath}/${emptyFileName}`;
+export const dir1Name = 'dir1';
+export const dir1path = `${testingDirectoryPath}/${dir1Name}`;
+
 export const testingDirectoryTreeDepth1: DirectoryEntry[] = [
   {
-    name: 'file1.empty',
-    fullPath: '/testdir/file1.empty',
+    name: loremFileName,
+    fullPath: `${testingDirectoryRelativePath}/${loremFileName}`,
     type: 'file',
   },
   {
-    name: 'file2.empty',
-    fullPath: '/testdir/file2.empty',
+    name: emptyFileName,
+    fullPath: `${testingDirectoryRelativePath}/${emptyFileName}`,
     type: 'file',
   },
   {
     name: 'dir2',
-    fullPath: '/testdir/dir2',
+    fullPath: `${testingDirectoryRelativePath}/dir2`,
     type: 'dir',
   },
   {
-    name: 'dir1',
-    fullPath: '/testdir/dir1',
+    name: dir1Name,
+    fullPath: `${testingDirectoryRelativePath}/${dir1Name}`,
     type: 'dir',
   },
 ];
 
 export const testingDirectoryTreeDepth2: DirectoryEntry[] = [
   {
-    name: 'file1.empty',
-    fullPath: '/testdir/file1.empty',
+    name: loremFileName,
+    fullPath: `${testingDirectoryRelativePath}/${loremFileName}`,
     type: 'file',
   },
   {
-    name: 'file2.empty',
-    fullPath: '/testdir/file2.empty',
+    name: emptyFileName,
+    fullPath: `${testingDirectoryRelativePath}/${emptyFileName}`,
     type: 'file',
   },
   {
     name: 'dir2',
-    fullPath: '/testdir/dir2',
+    fullPath: `${testingDirectoryRelativePath}/dir2`,
     type: 'dir',
     contents: [
       {
         name: 'dir3',
-        fullPath: '/testdir/dir2/dir3',
+        fullPath: `${testingDirectoryRelativePath}/dir2/dir3`,
         type: 'dir',
       },
     ],
   },
   {
-    name: 'dir1',
-    fullPath: '/testdir/dir1',
+    name: dir1Name,
+    fullPath: `${testingDirectoryRelativePath}/${dir1Name}`,
     type: 'dir',
     contents: [
       {
         name: 'file3.empty',
-        fullPath: '/testdir/dir1/file3.empty',
+        fullPath: `${testingDirectoryRelativePath}/${dir1Name}/file3.empty`,
         type: 'file',
       },
     ],
@@ -158,28 +170,28 @@ export const testingDirectoryTreeDepth2: DirectoryEntry[] = [
 
 export const testingDirectoryTreeDepth3: DirectoryEntry[] = [
   {
-    name: 'file1.empty',
-    fullPath: '/testdir/file1.empty',
+    name: loremFileName,
+    fullPath: `${testingDirectoryRelativePath}/${loremFileName}`,
     type: 'file',
   },
   {
-    name: 'file2.empty',
-    fullPath: '/testdir/file2.empty',
+    name: emptyFileName,
+    fullPath: `${testingDirectoryRelativePath}/${emptyFileName}`,
     type: 'file',
   },
   {
     name: 'dir2',
-    fullPath: '/testdir/dir2',
+    fullPath: `${testingDirectoryRelativePath}/dir2`,
     type: 'dir',
     contents: [
       {
         name: 'dir3',
-        fullPath: '/testdir/dir2/dir3',
+        fullPath: `${testingDirectoryRelativePath}/dir2/dir3`,
         type: 'dir',
         contents: [
           {
             name: 'file4.empty',
-            fullPath: '/testdir/dir2/dir3/file4.empty',
+            fullPath: `${testingDirectoryRelativePath}/dir2/dir3/file4.empty`,
             type: 'file',
           },
         ],
@@ -187,13 +199,13 @@ export const testingDirectoryTreeDepth3: DirectoryEntry[] = [
     ],
   },
   {
-    name: 'dir1',
-    fullPath: '/testdir/dir1',
+    name: dir1Name,
+    fullPath: `${testingDirectoryRelativePath}/${dir1Name}`,
     type: 'dir',
     contents: [
       {
         name: 'file3.empty',
-        fullPath: '/testdir/dir1/file3.empty',
+        fullPath: `${testingDirectoryRelativePath}/${dir1Name}/file3.empty`,
         type: 'file',
       },
     ],

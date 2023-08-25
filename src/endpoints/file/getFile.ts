@@ -17,34 +17,17 @@ export function addGetFileEndpoint(app: Elysia) {
     // Get the full path to the file
     const filePath = join(getConfig().dataDir, relativePath);
 
-    // Get the file and verify that it exists
-    const fileResult = await getFile(filePath);
-    if (typeof fileResult === 'object' && 'code' in fileResult) {
-      if (fileResult.code === 'not-found') {
-        set.status = 404;
-        return 'The file you requested was not found';
-      }
-      if (fileResult.code === 'not-file') {
-        set.status = 400;
-        return 'The path you provided is not a file';
-      }
-      set.status = 500;
-      // For safety, we don't want to return the error message
-      return 'An unknown error occurred';
-    }
-
-    // There is a file, so return it
     try {
-      const file = fileResult;
-      const response = new Response(file);
-      return response;
+      // Get the file
+      const file = await getFile(filePath);
+      if (file === null) {
+        set.status = 404;
+        return 'File does not exist';
+      }
+      return new Response(file);
     } catch (error) {
-      // Not sure what could go wrong here, but just in case
       set.status = 500;
-      return {
-        message: 'There was an error when handling your file',
-        error: error,
-      };
+      return 'There was an error when fetching your file';
     }
   });
 }
