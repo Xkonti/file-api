@@ -19,17 +19,18 @@ export function addGetFileEndpoint(app: Elysia) {
 
     // Get the file and verify that it exists
     const fileResult = await getFile(filePath);
-    if (typeof fileResult === 'string') {
-      if (fileResult === 'not-found') {
+    if (typeof fileResult === 'object' && 'code' in fileResult) {
+      if (fileResult.code === 'not-found') {
         set.status = 404;
         return 'The file you requested was not found';
       }
-      if (fileResult === 'not-file') {
+      if (fileResult.code === 'not-file') {
         set.status = 400;
         return 'The path you provided is not a file';
       }
       set.status = 500;
-      return fileResult;
+      // For safety, we don't want to return the error message
+      return 'An unknown error occurred';
     }
 
     // There is a file, so return it
