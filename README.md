@@ -15,7 +15,7 @@ A simple RESTful API that allows you to manipulate files and directories.
 The easiest way to run the File API is to use the Docker image. The image is available on [Docker Hub](https://hub.docker.com/r/xkonti/file-api):
 
 ```bash
-docker run -d -p 3210:3000 -e API_KEY=YOUR_API_KEY -v /your/directory/to/mount:/data file-api:latest
+docker run -d -p 3210:3000 -e API_KEY=YOUR_API_KEY -v /your/directory/to/mount:/data xkonti/file-api:latest
 ```
 
 Available configuration options:
