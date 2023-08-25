@@ -2,10 +2,10 @@ import {getConfig} from './config';
 import {UrlBuilder} from './urlBuilder';
 
 export class RequestBuilder {
-  headers: Headers = new Headers();
-  method: RequestInit['method'] = 'GET';
-  urlBuilder: UrlBuilder;
-  apiKeyHeader = true;
+  private headers: Headers = new Headers();
+  private method: RequestInit['method'] = 'GET';
+  private urlBuilder: UrlBuilder;
+  private apiKeyHeader = true;
 
   constructor(url: string | URL | UrlBuilder) {
     if (typeof url === 'string' || url instanceof URL) {

@@ -1,4 +1,5 @@
 # File API
+
 A simple RESTful API that allows you to manipulate files and directories.
 
 > [!WARNING]
@@ -18,6 +19,7 @@ docker run -d -p 3210:3000 -e API_KEY=YOUR_API_KEY -v /your/directory/to/mount:/
 ```
 
 Available configuration options:
+
 - Internal port: `3000`
 - Mount point for the directory to be managed via API: `/data`
 - `API_KEY` environment variable: the API key to use for authentication
@@ -27,21 +29,22 @@ Available configuration options:
 An API key must be configured in order to use the API. The API key can be configured using the `API_KEY` environment variable. Please use something that is base64 encoded so that it can be used in HTTP headers and URL query.
 
 Each HTTP request will be first checked for API key. If the API key is not provided, the request will be rejected with a `401 Unauthorized` response. The API key can be provided in two ways:
+
 - HTTP header: `api-key` - example: `curl --request GET --url 'http://localhost:3000/list?path=%2F' --header 'apikey: YOUR_API_KEY'`
 - Query parameter: `apikey` - example: `curl --request GET --url 'http://localhost:3000/list?path=%2F&apikey=YOUR_API_KEY'`
-
 
 ## API
 
 ### List files and directories in a directory
 
 You can list files and/or directories by using the `/list` endpoint with the following parameters:
-- `path` - the path of the directory to list (remember to encode the path)
+
+- `path` - the path of the directory to list (remember to encode it)
 - `dirs` - whether to include directories or not (default: `false`). If directories are listed their contents will be nested.
-- `depth` - how deep to list directories. The default `1` will list only files and directories within the specified directory -  no contents of subdirectories will be listed.
+- `depth` - how deep to list directories. The default `1` will list only files and directories within the specified directory - no contents of subdirectories will be listed.
 
 <details>
-  <summary>Examples</summary>
+  <summary>Examples [click to expand]</summary>
 
 - `curl --request GET --url 'http://localhost:3000/list?path=%2F'` - list only files in the root directory (`%2F` is the encoded `/`):
   ```json
@@ -54,6 +57,7 @@ You can list files and/or directories by using the `/list` endpoint with the fol
   ]
   ```
 - `curl --request GET --url 'http://localhost:3000/list?path=%2F&dirs=true'` - list files and directories in the root directory (`%2F` is the encoded `/`):
+
   ```json
   [
     {
@@ -173,6 +177,20 @@ You can list files and/or directories by using the `/list` endpoint with the fol
     }
   ]
   ```
+  </details>
+
+### Download a file
+
+You can download a specific file by using the `/file` endpoint with the following parameters:
+
+- `path` - the path of the file to download (remember to encode it)
+
+If the file does not exist or a path is pointing to a directory, a `404 Not Found` response will be returned.
+
+<details>
+  <summary>Examples [click to expand]</summary>
+
+- `curl --request GET --url 'http://localhost:3000/file?path=%2FExpenses%202022.xlsx'` - download the `Expenses 2022.xlsx` file (`%2FExpenses%202022.xlsx` is the encoded `/Expenses 2022.xlsx`)
 </details>
 
 ## Roadmap
@@ -190,7 +208,7 @@ You can list files and/or directories by using the `/list` endpoint with the fol
 ### Files
 
 - [ ] Check if a file exists
-- [ ] Download a file
+- [x] Download a file
 - [ ] Upload a file
 - [ ] Delete a file
 - [ ] Create an empty file
@@ -204,10 +222,10 @@ You can list files and/or directories by using the `/list` endpoint with the fol
 - [x] API key authentication
 - [ ] Protect paths with API keys
 - [ ] Protect operation categories with API keys
-    - [ ] Listing files and directories
-    - [ ] Downloading files
-    - [ ] Uploading/copying files & creating directories
-    - [ ] Deleting/moving/renaming files & directories
+  - [ ] Listing files and directories
+  - [ ] Downloading files
+  - [ ] Uploading/copying files & creating directories
+  - [ ] Deleting/moving/renaming files & directories
 
 ### Deployment
 
