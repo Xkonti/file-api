@@ -3,6 +3,7 @@ import {addGetListEndpoint} from './endpoints/list/getList';
 import {addApiKeyGuard} from './endpoints/guards';
 import {addErrorHandling} from './endpoints/errors';
 import {addGetFileEndpoint} from './endpoints/file/getFile';
+import {addUploadFileEndpoint} from './endpoints/file/uploadFile';
 
 export function buildApp() {
   let app = new Elysia();
@@ -14,5 +15,6 @@ export function buildApp() {
   // Endpoints
   addGetListEndpoint(app);
   addGetFileEndpoint(app);
+  addUploadFileEndpoint(app);
   return app;
 }
