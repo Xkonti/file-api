@@ -239,6 +239,5 @@ If the file does not exist or a path is pointing to a directory, a `404 Not Foun
 
 ## Stack
 
-- Runtime: Bun
-- Bundler: Bun
-- API framework: Elysia.js
+- Runtime and bundler: [Bun](https://bun.sh/)
+- API framework: [Elysia.js](https://elysiajs.com/)
