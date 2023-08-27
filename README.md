@@ -201,7 +201,8 @@ If the file does not exist or a path is pointing to a directory, a `404 Not Foun
 
 ### Directories
 
-- [x] List files and directories in a directory: `GET /list`
+- [x] List files and directories in a directory as a flat list: `GET /list`
+- [ ] List files and directories in a directory as a tree: `GET /tree`
 - [ ] Check if a directory exists: `GET /dir/exists`
 - [ ] Create a directory: `POST /dir`
 - [ ] Delete a directory: `DELETE /dir`
@@ -215,7 +216,7 @@ If the file does not exist or a path is pointing to a directory, a `404 Not Foun
 - [x] Download a file: `GET /file`
 - [ ] Upload a file: `POST /file`
 - [ ] Delete a file: `DELETE /file`
-- [ ] Create an empty file: `POST /file?touch=true`
+- [ ] Create an empty file: `POST /file/touch`
 - [ ] Rename a file: `POST /file/rename`
 - [ ] Move a file: `POST /file/move`
 - [ ] Copy a file: `POST /file/copy`
