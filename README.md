@@ -201,25 +201,26 @@ If the file does not exist or a path is pointing to a directory, a `404 Not Foun
 
 ### Directories
 
-- [x] List files and directories in a directory
-- [ ] Check if a directory exists
-- [ ] Create a directory
-- [ ] Delete a directory
-- [ ] Rename a directory
-- [ ] Move a directory
-- [ ] Copy a directory
+- [x] List files and directories in a directory: `GET /list`
+- [ ] Check if a directory exists: `GET /dir/exists`
+- [ ] Create a directory: `POST /dir`
+- [ ] Delete a directory: `DELETE /dir`
+- [ ] Rename a directory: : `POST /dir/rename`
+- [ ] Move a directory: `POST /dir/move`
+- [ ] Copy a directory: `POST /dir/copy`
 
 ### Files
 
-- [ ] Check if a file exists
-- [x] Download a file
-- [ ] Upload a file
-- [ ] Delete a file
-- [ ] Create an empty file
-- [ ] Rename a file
-- [ ] Move a file
-- [ ] Copy a file
-- [ ] Get file metadata
+- [ ] Check if a file exists: `GET /file/exists`
+- [x] Download a file: `GET /file`
+- [ ] Upload a file: `POST /file`
+- [ ] Delete a file: `DELETE /file`
+- [ ] Create an empty file: `POST /file?touch=true`
+- [ ] Rename a file: `POST /file/rename`
+- [ ] Move a file: `POST /file/move`
+- [ ] Copy a file: `POST /file/copy`
+- [ ] Get file metadata: `GET /file/meta`
+- [ ] Get file size: `GET /file/size`
 
 ### Permissions
 
