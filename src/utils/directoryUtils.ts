@@ -1,7 +1,6 @@
 import {join} from 'path';
 import {mkdir, readdir, stat} from 'fs/promises';
 import {Dirent} from 'fs';
-import {Result} from 'neverthrow';
 
 export type DirectoryEntry = {
   name: string;

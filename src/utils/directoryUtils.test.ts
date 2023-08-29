@@ -1,6 +1,7 @@
 import {describe, expect, test} from 'bun:test';
 import {
   DirectoryEntry,
+  checkIfDirectoryExists,
   flattenFiles,
   listSorterByPath,
   listSorterByType,
@@ -15,6 +16,14 @@ import {
   testingDirectoryTreeDepth2,
   testingDirectoryTreeDepth3,
 } from '../testing/testingUtils.test';
+import {
+  FileSystemConstructionEntry,
+  createTestFileSystem,
+  destroyTestFileSystem,
+  testDirectory,
+} from '../testing/testFileSystem';
+import {setConfig} from './config';
+import {join} from 'path';
 
 describe('readDirectoryContents()', () => {
   test('should return proper depth 1 tree', async () => {
@@ -119,5 +128,50 @@ describe('listSorters', () => {
       {name: 'dir2/file3.txt', type: 'file', fullPath: '/dir2/file3.txt'},
       {name: 'file1.txt', type: 'file', fullPath: '/file1.txt'},
     ]);
+  });
+});
+
+describe('checkIfDirectoryExists()', () => {
+  const testDirectoryContents: FileSystemConstructionEntry = {
+    dir1: {
+      dir2: {},
+    },
+    'file1.txt': 'hello',
+    dir3: {
+      'file2.txt': 'there',
+    },
+  };
+
+  test('should return true when directory exists', async () => {
+    await createTestFileSystem(testDirectoryContents);
+    try {
+      expect(await checkIfDirectoryExists(testDirectory)).toBe(true);
+      expect(await checkIfDirectoryExists(join(testDirectory, 'dir1'))).toBe(true);
+      expect(await checkIfDirectoryExists(join(testDirectory, 'dir1/dir2'))).toBe(true);
+      expect(await checkIfDirectoryExists(join(testDirectory, 'dir3'))).toBe(true);
+    } finally {
+      await destroyTestFileSystem();
+    }
+  });
+
+  test('should return false when directory does not exist', async () => {
+    await createTestFileSystem(testDirectoryContents);
+    try {
+      expect(await checkIfDirectoryExists(join(testDirectory, 'dir10'))).toBe(false);
+      expect(await checkIfDirectoryExists(join(testDirectory, 'hello'))).toBe(false);
+      expect(await checkIfDirectoryExists(join(testDirectory, 'nothing/here'))).toBe(false);
+    } finally {
+      await destroyTestFileSystem();
+    }
+  });
+
+  test('should return false when pointing to a file', async () => {
+    await createTestFileSystem(testDirectoryContents);
+    try {
+      expect(await checkIfDirectoryExists(join(testDirectory, 'file1.txt'))).toBe(false);
+      expect(await checkIfDirectoryExists(join(testDirectory, 'dir3/file2.txt'))).toBe(false);
+    } finally {
+      await destroyTestFileSystem();
+    }
   });
 });
