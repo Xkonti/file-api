@@ -2,6 +2,7 @@ import {exists, mkdir} from 'fs/promises';
 import {rimraf} from 'rimraf';
 import {setConfig} from '../utils/config';
 import {join} from 'path';
+import {DirectoryEntry} from '../utils/directoryUtils';
 
 export const testDirectory = './testdata';
 export type FileSystemConstructionEntry = {
@@ -34,6 +35,52 @@ export async function createTestFileSystem(contents: FileSystemConstructionEntry
 
 export async function destroyTestFileSystem() {
   await deleteTestDirectory();
+}
+
+export function generateDirectoryEntryCollections(
+  parentDirectory: string,
+  contents: FileSystemConstructionEntry,
+) {
+  const tree: DirectoryEntry[] = [];
+  let flatList: DirectoryEntry[] = [];
+
+  for (const [name, value] of Object.entries(contents)) {
+    const fullPath = join(parentDirectory, name);
+
+    if (typeof value === 'string') {
+      const entry = {
+        name,
+        fullPath,
+        type: 'file',
+      } as DirectoryEntry;
+      tree.push(entry);
+      flatList.push(entry);
+    } else {
+      const subContents = generateDirectoryEntryCollections(
+        fullPath,
+        value as FileSystemConstructionEntry,
+      );
+
+      tree.push({
+        name,
+        fullPath,
+        type: 'dir',
+        contents: subContents.tree ?? [],
+      });
+
+      flatList = [
+        ...flatList,
+        {
+          name,
+          fullPath,
+          type: 'dir',
+        },
+        ...subContents.flatList,
+      ];
+    }
+  }
+
+  return {tree, flatList};
 }
 
 async function deleteTestDirectory() {
