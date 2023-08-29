@@ -1,6 +1,7 @@
 import {join} from 'path';
-import {readdir} from 'fs/promises';
+import {mkdir, readdir, stat} from 'fs/promises';
 import {Dirent} from 'fs';
+import {Result} from 'neverthrow';
 
 export type DirectoryEntry = {
   name: string;
@@ -8,6 +9,32 @@ export type DirectoryEntry = {
   type: 'dir' | 'file';
   contents?: DirectoryEntry[];
 };
+
+/**
+ * Checks if a directory exists.
+ * @param absoluteDirectoryPath Absolute path to the directory.
+ */
+export async function checkIfDirectoryExists(absoluteDirectoryPath: PathLike): Promise<boolean> {
+  try {
+    const stats = await stat(absoluteDirectoryPath);
+    return stats.isDirectory();
+  } catch (err) {
+    if ((err as {code: string}).code === 'ENOENT') {
+      return false;
+    } else {
+      throw err;
+    }
+  }
+}
+
+/**
+ * Creates a directory at the specified path. If the directory already exists, it does nothing.
+ * @param absoluteDirectoryPath Absolute path to the directory to be created.
+ */
+export async function createDirectory(absoluteDirectoryPath: PathLike): Promise<boolean> {
+  const success = await mkdir(absoluteDirectoryPath, {recursive: true});
+  return success != null;
+}
 
 /**
  * Reads the contents of a directory and returns a list of directory entries in a tree structure.

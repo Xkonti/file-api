@@ -7,7 +7,8 @@
     "prod": "bun run src/index.ts"
   },
   "dependencies": {
-    "elysia": "latest"
+    "elysia": "latest",
+    "neverthrow": "^6.0.0"
   },
   "devDependencies": {
     "bun-types": "^0.7.3"
