@@ -1,10 +1,10 @@
 import {exists, mkdir} from 'fs/promises';
 import {rimraf} from 'rimraf';
 import {setConfig} from '../utils/config';
-import {join} from 'path';
+import {dirname, join, normalize} from 'path';
 import {DirectoryEntry} from '../utils/directoryUtils';
+import {testDirectory} from './constants';
 
-export const testDirectory = './testdata';
 export type FileSystemConstructionEntry = {
   [key: string]: string | FileSystemConstructionEntry;
 };

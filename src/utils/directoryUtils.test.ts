@@ -14,9 +14,9 @@ import {
   createTestFileSystem,
   destroyTestFileSystem,
   generateDirectoryEntryCollections,
-  testDirectory,
 } from '../testing/testFileSystem';
 import {join} from 'path';
+import {testDirectory} from '../testing/constants';
 
 describe('checkIfDirectoryExists()', () => {
   const testDirectoryContents: FileSystemConstructionEntry = {

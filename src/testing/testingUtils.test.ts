@@ -1,4 +1,3 @@
-import {DirectoryEntry, flattenFiles, listSorterByPath} from '../utils/directoryUtils';
 import {FileSystemConstructionEntry} from './testFileSystem';
 
 let fakeTreeEntryId = 0;
@@ -59,18 +58,3 @@ export function getFakeTree(
 
   return tree;
 }
-
-export const illegalPaths = ['..', '../..', '/hello/../world/../..', './..', './../there.jpg'];
-
-export const testingDirectoryPath = './testdir';
-export const testingDirectoryRelativePath = '/testdir';
-
-export const pathToNowhere = `${testingDirectoryPath}/invalid/path`;
-export const loremFileName = 'file1.lorem';
-export const loremFilePath = `${testingDirectoryPath}/${loremFileName}`;
-export const loremFileContents =
-  'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
-export const emptyFileName = 'file2.empty';
-export const emptyFilePath = `${testingDirectoryPath}/${emptyFileName}`;
-export const dir1Name = 'dir1';
-export const dir1path = `${testingDirectoryPath}/${dir1Name}`;

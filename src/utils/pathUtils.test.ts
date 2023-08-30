@@ -1,9 +1,9 @@
 import {beforeEach, describe, expect, test} from 'bun:test';
-import {dir1path, emptyFilePath, illegalPaths, loremFilePath} from '../testing/testingUtils.test';
 import {isPathValid, validateRelativePath} from './pathUtils';
 import {getConfig, setConfig} from './config';
 import assert from 'assert';
 import {join} from 'path';
+import {illegalPaths} from '../testing/constants';
 
 beforeEach(() => {
   // Update config
@@ -15,18 +15,7 @@ beforeEach(() => {
 
 describe('isPathValid', () => {
   test('should return true when path is valid', () => {
-    const validPaths = [
-      'a',
-      'a/b',
-      'a/b/c',
-      'a/b/c/d.png',
-      './',
-      './a',
-      './a/b.jpg',
-      loremFilePath,
-      emptyFilePath,
-      dir1path,
-    ];
+    const validPaths = ['a', 'a/b', 'a/b/c', 'a/b/c/d.png', './', './a', './a/b.jpg'];
 
     for (const validPath of validPaths) {
       expect(isPathValid(validPath)).toBe(true);
@@ -64,18 +53,7 @@ describe('validateRelativePath', () => {
   });
 
   test('should return a path data object when path is valid', () => {
-    const validPaths = [
-      'a',
-      'a/b',
-      'a/b/c',
-      'a/b/c/d.png',
-      './',
-      './a',
-      './a/b.jpg',
-      loremFilePath,
-      emptyFilePath,
-      dir1path,
-    ];
+    const validPaths = ['a', 'a/b', 'a/b/c', 'a/b/c/d.png', './', './a', './a/b.jpg'];
 
     for (const validPath of validPaths) {
       const result = validateRelativePath(validPath);

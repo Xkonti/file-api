@@ -2,7 +2,6 @@ import {describe, expect, test, beforeEach, afterEach} from 'bun:test';
 import {buildApp} from '../../app';
 import {RequestBuilder} from '../../utils/requestBuilder';
 import {UrlBuilder} from '../../utils/urlBuilder';
-import {illegalPaths} from '../../testing/testingUtils.test';
 import {DirectoryEntry, flattenFiles, listSorterByPath} from '../../utils/directoryUtils';
 import {
   FileSystemConstructionEntry,
@@ -10,6 +9,7 @@ import {
   destroyTestFileSystem,
   generateDirectoryEntryCollections,
 } from '../../testing/testFileSystem';
+import {illegalPaths} from '../../testing/constants';
 
 const testDirectoryContents: FileSystemConstructionEntry = {
   dir1: {
