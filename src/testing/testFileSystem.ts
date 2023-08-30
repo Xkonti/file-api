@@ -1,7 +1,7 @@
 import {exists, mkdir} from 'fs/promises';
 import {rimraf} from 'rimraf';
 import {setConfig} from '../utils/config';
-import {dirname, join, normalize} from 'path';
+import {join} from 'path';
 import {DirectoryEntry} from '../utils/directoryUtils';
 import {testDirectory} from './constants';
 

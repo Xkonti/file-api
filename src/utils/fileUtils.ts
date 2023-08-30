@@ -4,6 +4,7 @@ import {Result, err, ok} from 'neverthrow';
 import {
   dirCreateFailMsg,
   fileAlreadyExistsMsg,
+  fileMustNotEmptyMsg,
   unknownErrorMsg,
 } from '../constants/commonResponses';
 import {dirname} from 'path';
@@ -34,6 +35,11 @@ export async function writeFile(
   contents: Blob,
   overwrite: boolean,
 ): Promise<Result<boolean, string>> {
+  // Check if contents is empty
+  if (contents.size === 0) {
+    return err(fileMustNotEmptyMsg);
+  }
+
   // Check if file exists
   const existingFile = await getFile(absolutePath);
   if (existingFile && !overwrite) {

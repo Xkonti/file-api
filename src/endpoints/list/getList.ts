@@ -1,8 +1,6 @@
-import {join} from 'path';
 import {flattenFiles, readDirectoryContents} from '../../utils/directoryUtils';
 import Elysia from 'elysia';
-import {getConfig} from '../../utils/config';
-import {isPathValid, validateRelativePath} from '../../utils/pathUtils';
+import {validateRelativePath} from '../../utils/pathUtils';
 
 export function addGetListEndpoint(app: Elysia) {
   return app.get('list', async ({query, set}) => {
