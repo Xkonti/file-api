@@ -58,3 +58,25 @@ export function getFakeTree(
 
   return tree;
 }
+
+type TupleOfArrays<T extends unknown[]> = {[K in keyof T]: T[K][]};
+type ArrayOfTuples<T extends unknown[]> = Array<{[K in keyof T]: T[K]}>;
+
+export function getPermutations<T extends unknown[]>(
+  ...optionSets: TupleOfArrays<T>
+): ArrayOfTuples<T> {
+  if (optionSets.length === 0) return [[]] as ArrayOfTuples<T>;
+
+  const [firstSet, ...restSets] = optionSets;
+  const restPermutations = getPermutations(...restSets);
+
+  const permutations: ArrayOfTuples<T> = [];
+
+  for (const option of firstSet) {
+    for (const restOption of restPermutations) {
+      permutations.push([option, ...restOption] as any);
+    }
+  }
+
+  return permutations;
+}
