@@ -77,7 +77,7 @@ afterEach(async () => {
   await destroyTestFileSystem();
 });
 
-describe.only('Upload file', () => {
+describe('Upload file', () => {
   test.each(getPermutations(['', null], [false, true], ['form-data', 'raw']))(
     'should return 400 when path is empty',
     async (path, override, transferMethod) => {
@@ -151,8 +151,6 @@ describe.only('Upload file', () => {
       let request = buildUploadRequest(path, false, content, transferMethod as 'form-data' | 'raw');
       let response = await app.handle(request);
       expect(response.status).toBe(409);
-
-      // Make sure the file contents are not changed
       const absolutePath = join(testDirectory, path);
       const file = await getFile(absolutePath);
       expect(file).not.toBeNull();
@@ -162,7 +160,6 @@ describe.only('Upload file', () => {
     },
   );
 
-  // Should return 201 when trying to upload a file that already exists and overwrite is true.
   test.each(
     getPermutations(
       ['/existing.txt', 'exdir1/anotherExisting.jpg', '/exdir2/exists'],
@@ -174,16 +171,6 @@ describe.only('Upload file', () => {
     async (path, content, transferMethod) => {
       let request = buildUploadRequest(path, true, content, transferMethod as 'form-data' | 'raw');
       let response = await app.handle(request);
-      console.log(
-        'Path:',
-        path,
-        'Transfer method:',
-        transferMethod,
-        'Status:',
-        response.status,
-        'Body:',
-        await response.text(),
-      );
       expect(response.status).toBe(201);
       const absolutePath = join(testDirectory, path);
       const file = await getFile(absolutePath);
@@ -195,10 +182,91 @@ describe.only('Upload file', () => {
     },
   );
 
-  // Should return 201 when uploading a file that does not exist.
-  // The content of the file should be the same as the content of the request.
+  test.each(
+    getPermutations(
+      ['/file1.txt', '/file2.txt'],
+      [false, true],
+      [example1ContentAsBlob, example2ContentAsBlob],
+      ['form-data', 'raw'],
+    ),
+  )(
+    'should return 201 when uploading a file that does not exist',
+    async (path, override, content, transferMethod) => {
+      let request = buildUploadRequest(
+        path,
+        override,
+        content,
+        transferMethod as 'form-data' | 'raw',
+      );
+      let response = await app.handle(request);
+      expect(response.status).toBe(201);
+      const absolutePath = join(testDirectory, path);
+      const file = await getFile(absolutePath);
+      expect(file).not.toBeNull();
+      const expectedTextContents = content instanceof Blob ? await content.text() : content;
+      expect(file?.size).toBe(expectedTextContents.length);
+      const fileContents = await file?.text();
+      expect(fileContents).toBe(expectedTextContents);
+    },
+  );
 
-  // Should create a directory when uploading a file to a path that does not exist.
+  test.each(
+    getPermutations(
+      ['/newDirectory/file1.txt', '/some/other/directory/somewhere/file2.txt'],
+      [false, true],
+      [example1ContentAsBlob, example2ContentAsBlob],
+      ['form-data', 'raw'],
+    ),
+  )(
+    'should return 201 when uploading a file to a path that does not exist',
+    async (path, override, content, transferMethod) => {
+      let request = buildUploadRequest(
+        path,
+        override,
+        content,
+        transferMethod as 'form-data' | 'raw',
+      );
+      let response = await app.handle(request);
+      expect(response.status).toBe(201);
+      const absolutePath = join(testDirectory, path);
+      const file = await getFile(absolutePath);
+      expect(file).not.toBeNull();
+      const expectedTextContents = content instanceof Blob ? await content.text() : content;
+      expect(file?.size).toBe(expectedTextContents.length);
+      const fileContents = await file?.text();
+      expect(fileContents).toBe(expectedTextContents);
+    },
+  );
 
-  // Should return 415 when uploading a file with an unsupported content type.
+  test.each(
+    getPermutations(
+      ['/file1.txt', '/dir1/file2.txt'],
+      [false, true],
+      [example1ContentAsBlob, example2ContentAsBlob],
+      ['form-data', 'raw'],
+      [
+        'text/plain',
+        'application/json',
+        'application/xml',
+        'image/png',
+        'image/jpeg',
+        'image/gif',
+        '',
+        'something/else',
+      ],
+    ),
+  )(
+    'should return 415 when uploading a file with an unsupported content type',
+    async (path, override, content, transferMethod, contentType) => {
+      let request = buildUploadRequest(
+        path,
+        override,
+        content,
+        transferMethod as 'form-data' | 'raw',
+        contentType,
+      );
+      let response = await app.handle(request);
+      expect(response.status).toBe(415);
+    },
+  );
 });
