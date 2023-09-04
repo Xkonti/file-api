@@ -4,6 +4,7 @@ import {createTestFileSystem, destroyTestFileSystem} from '../testing/testFileSy
 import {fs1Files, fs1TestDirectoryContents, testDirectory} from '../testing/constants';
 import {join} from 'path';
 import assert from 'assert';
+import {getPermutations} from '../testing/testingUtils.test';
 
 describe('getFile()', () => {
   const files = fs1Files;
@@ -64,37 +65,39 @@ describe('writeFile()', () => {
     await destroyTestFileSystem();
   });
 
-  test('should write a new file to the file system', async () => {
-    const filesToWrite = [
-      {
-        absolutePath: join(testDirectory, '/.newFile.txt'),
-        contents: 'This is a new file.',
-      },
-      {
-        absolutePath: join(testDirectory, 'TerryPratchett/no-extension-file'),
-        contents: '123654789987654321',
-      },
-    ];
-
-    for (const fileToWrite of filesToWrite) {
-      const result = await writeFile(
-        fileToWrite.absolutePath,
-        new Blob([fileToWrite.contents], {type: 'text/plain'}),
-        false,
-      );
-      expect(result.isOk()).toBe(true);
-      assert(result.isOk());
-      expect(result.value).toBe(true);
-      const file = await getFile(fileToWrite.absolutePath);
-      expect(file).not.toBeNull();
-      expect(file?.size).toBe(fileToWrite.contents.length);
-      const contents = await file?.text();
-      expect(contents).toBe(fileToWrite.contents);
-    }
+  test.each(
+    getPermutations(
+      [
+        {
+          absolutePath: join(testDirectory, '/.newFile.txt'),
+          contents: 'This is a new file.',
+        },
+        {
+          absolutePath: join(testDirectory, 'TerryPratchett/no-extension-file'),
+          contents: '123654789987654321',
+        },
+      ],
+      [false, true],
+    ),
+  )('should write a new file to the file system', async (fileToWrite, overwrite) => {
+    const result = await writeFile(
+      fileToWrite.absolutePath,
+      new Blob([fileToWrite.contents], {type: 'text/plain'}),
+      overwrite,
+    );
+    expect(result.isOk()).toBe(true);
+    assert(result.isOk());
+    expect(result.value).toBe(true);
+    const file = await getFile(fileToWrite.absolutePath);
+    expect(file).not.toBeNull();
+    expect(file?.size).toBe(fileToWrite.contents.length);
+    const contents = await file?.text();
+    expect(contents).toBe(fileToWrite.contents);
   });
 
-  test('should fail to overwrite a file if not forced', async () => {
-    for (const fileToWrite of filesList) {
+  test.each(getPermutations(filesList))(
+    'should fail to overwrite a file if not forced',
+    async fileToWrite => {
       const result = await writeFile(
         fileToWrite.absolutePath,
         new Blob(['bunch of nothing'], {type: 'text / plain'}),
@@ -108,109 +111,99 @@ describe('writeFile()', () => {
       expect(file?.size).toBe(fileToWrite.contents.length);
       const contents = await file?.text();
       expect(contents).toBe(fileToWrite.contents);
-    }
-  });
+    },
+  );
 
-  test('should overwrite a file if forced', async () => {
+  test.each(getPermutations(filesList))('should overwrite a file if forced', async fileToWrite => {
     const newContents = 'bunch of nothing';
-    for (const fileToWrite of filesList) {
-      const result = await writeFile(
-        fileToWrite.absolutePath,
-        new Blob([newContents], {type: 'text / plain'}),
-        true, // <- overwrite
-      );
-      expect(result.isOk()).toBe(true);
-      assert(result.isOk());
-      expect(result.value).toBe(true);
-      const file = await getFile(fileToWrite.absolutePath);
-      expect(file).not.toBeNull();
-      expect(file?.size).toBe(newContents.length);
-      const contents = await file?.text();
-      expect(contents).toBe(newContents);
-    }
+    const result = await writeFile(
+      fileToWrite.absolutePath,
+      new Blob([newContents], {type: 'text / plain'}),
+      true, // <- overwrite
+    );
+    expect(result.isOk()).toBe(true);
+    assert(result.isOk());
+    expect(result.value).toBe(true);
+    const file = await getFile(fileToWrite.absolutePath);
+    expect(file).not.toBeNull();
+    expect(file?.size).toBe(newContents.length);
+    const contents = await file?.text();
+    expect(contents).toBe(newContents);
   });
 
-  test('should refuse to write the same file as a directory name', async () => {
-    const directories = [
-      join(testDirectory, 'TerryPratchett'),
-      join(testDirectory, 'FrankHerbert'),
-    ];
-    // No overwrite
-    for (const directory of directories) {
-      const result = await writeFile(
-        directory,
-        new Blob(['bunch of nothing'], {type: 'text / plain'}),
-        false,
-      );
-      expect(result.isErr()).toBe(true);
-      // Check it's still a directory
-      const file = await getFile(directory);
-      expect(file).toBeNull();
-    }
+  test.each(
+    getPermutations([join(testDirectory, 'TerryPratchett'), join(testDirectory, 'FrankHerbert')]),
+  )('should refuse to write the same file as a directory name', async directory => {
+    const result1 = await writeFile(
+      directory,
+      new Blob(['bunch of nothing'], {type: 'text / plain'}),
+      false,
+    );
+    expect(result1.isErr()).toBe(true);
+    // Check it's still a directory
+    const file1 = await getFile(directory);
+    expect(file1).toBeNull();
     // With overwrite
-    for (const directory of directories) {
-      const result = await writeFile(
-        directory,
-        new Blob(['bunch of nothing'], {type: 'text / plain'}),
-        true,
-      );
-      expect(result.isErr()).toBe(true);
-      // Check it's still a directory
-      const file = await getFile(directory);
-      expect(file).toBeNull();
-    }
+    const result2 = await writeFile(
+      directory,
+      new Blob(['bunch of nothing'], {type: 'text / plain'}),
+      true,
+    );
+    expect(result2.isErr()).toBe(true);
+    // Check it's still a directory
+    const file2 = await getFile(directory);
+    expect(file2).toBeNull();
   });
 
-  test('should create the directory if it does not exist', async () => {
-    const filesToWrite = [
-      {
-        absolutePath: join(testDirectory, 'some/dir/newFile.txt'),
-        contents: 'This is a new file.',
-      },
-      {
-        absolutePath: join(
-          testDirectory,
-          'TerryPratchett/a/lot/of/directories/haha/anotherFile.jpg',
-        ),
-        contents: '123654789987654321',
-      },
-    ];
-
-    for (const fileToWrite of filesToWrite) {
-      const result = await writeFile(
-        fileToWrite.absolutePath,
-        new Blob([fileToWrite.contents], {type: 'text/plain'}),
-        false,
-      );
-      expect(result.isOk()).toBe(true);
-      assert(result.isOk());
-      expect(result.value).toBe(true);
-      const file = await getFile(fileToWrite.absolutePath);
-      expect(file).not.toBeNull();
-      expect(file?.size).toBe(fileToWrite.contents.length);
-      const contents = await file?.text();
-      expect(contents).toBe(fileToWrite.contents);
-    }
+  test.each(
+    getPermutations(
+      [
+        {
+          absolutePath: join(testDirectory, '/.newFile.txt'),
+          contents: 'This is a new file.',
+        },
+        {
+          absolutePath: join(testDirectory, 'TerryPratchett/no-extension-file'),
+          contents: '123654789987654321',
+        },
+      ],
+      [false, true],
+    ),
+  )('should create the directory if it does not exist', async (fileToWrite, overwrite) => {
+    const result = await writeFile(
+      fileToWrite.absolutePath,
+      new Blob([fileToWrite.contents], {type: 'text/plain'}),
+      overwrite,
+    );
+    expect(result.isOk()).toBe(true);
+    assert(result.isOk());
+    expect(result.value).toBe(true);
+    const file = await getFile(fileToWrite.absolutePath);
+    expect(file).not.toBeNull();
+    expect(file?.size).toBe(fileToWrite.contents.length);
+    const contents = await file?.text();
+    expect(contents).toBe(fileToWrite.contents);
   });
 
-  test('should not allow creating empty files', async () => {
-    const filesToWrite = [
-      {
-        absolutePath: join(testDirectory, 'empty/string.txt'),
-        contents: new Blob([''], {type: 'text/plain'}),
-      },
-      {
-        absolutePath: join(testDirectory, 'nil/null/nic/nothing/nada.jpg'),
-        contents: new Blob(),
-      },
-    ];
-
-    for (const fileToWrite of filesToWrite) {
-      const result = await writeFile(fileToWrite.absolutePath, fileToWrite.contents, false);
-      expect(result.isErr()).toBe(true);
-      // Check if the file is not created
-      const file = await getFile(fileToWrite.absolutePath);
-      expect(file).toBeNull();
-    }
+  test.each(
+    getPermutations(
+      [
+        {
+          absolutePath: join(testDirectory, 'empty/string.txt'),
+          contents: new Blob([''], {type: 'text/plain'}),
+        },
+        {
+          absolutePath: join(testDirectory, 'nil/null/nic/nothing/nada.jpg'),
+          contents: new Blob(),
+        },
+      ],
+      [false, true],
+    ),
+  )('should not allow creating empty files', async (fileToWrite, overwrite) => {
+    const result = await writeFile(fileToWrite.absolutePath, fileToWrite.contents, overwrite);
+    expect(result.isErr()).toBe(true);
+    // Check if the file is not created
+    const file = await getFile(fileToWrite.absolutePath);
+    expect(file).toBeNull();
   });
 });
