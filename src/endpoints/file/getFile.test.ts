@@ -1,17 +1,9 @@
-import {beforeEach, expect, test} from 'bun:test';
+import {afterEach, beforeEach, expect, test} from 'bun:test';
 import {buildApp} from '../../app';
-import {setConfig} from '../../utils/config';
 import {RequestBuilder} from '../../utils/requestBuilder';
 import {UrlBuilder} from '../../utils/urlBuilder';
-import {
-  dir1Name,
-  emptyFileName,
-  illegalPaths,
-  loremFileContents,
-  loremFileName,
-  pathToNowhere,
-  testingDirectoryRelativePath,
-} from '../../testing/testingUtils.test';
+import {fs1Files, fs1TestDirectoryContents, illegalPaths} from '../../testing/constants';
+import {createTestFileSystem, destroyTestFileSystem} from '../../testing/testFileSystem';
 
 function buildFileRequest(path: string | null) {
   let url = new UrlBuilder('http://localhost/file');
@@ -25,36 +17,38 @@ function buildFileRequest(path: string | null) {
 // App instance
 let app: ReturnType<typeof buildApp>;
 
-beforeEach(() => {
-  // Update config
-  setConfig({
-    apiKey: 'test',
-    dataDir: './',
-  });
+const files = fs1Files;
+const filesList = Object.values(files);
+const testDirectoryContents = fs1TestDirectoryContents;
 
-  // Create app
+beforeEach(async () => {
+  await createTestFileSystem(testDirectoryContents);
   app = buildApp();
 });
 
-// TODO: Should return a 200 if the file is found
+afterEach(async () => {
+  await destroyTestFileSystem();
+});
+
 test('should return file contents if the file is found', async () => {
-  const filePath = `${testingDirectoryRelativePath}/${loremFileName}`;
-  const request = buildFileRequest(filePath);
-  const response = await app.handle(request);
-  expect(response.status).toBe(200);
-  const bodyAsText = await response.text();
-  expect(bodyAsText).toBe(loremFileContents);
+  for (const fileDef of filesList) {
+    const request = buildFileRequest(fileDef.relativePath);
+    const response = await app.handle(request);
+    expect(response.status).toBe(200);
+    const bodyAsText = await response.text();
+    expect(bodyAsText).toBe(fileDef.contents);
+  }
 });
 
 test('should return a 404 if the file is not found', async () => {
-  const filePath = `${testingDirectoryRelativePath}/${pathToNowhere}`;
+  const filePath = `/path/to/nowhere`;
   const request = buildFileRequest(filePath);
   const response = await app.handle(request);
   expect(response.status).toBe(404);
 });
 
 test('should return a 404 if the path is not a file', async () => {
-  const filePath = `${testingDirectoryRelativePath}/${dir1Name}`;
+  const filePath = `/TerryPratchett`;
   const request = buildFileRequest(filePath);
   const response = await app.handle(request);
   expect(response.status).toBe(404);
@@ -80,10 +74,8 @@ test('should return a 400 when illegal path', async () => {
   }
 });
 
-// TODO: Should return a 200 if the file is empty
 test('should return a 200 if the file is empty', async () => {
-  const filePath = `${testingDirectoryRelativePath}/${emptyFileName}`;
-  const request = buildFileRequest(filePath);
+  const request = buildFileRequest(files.emptiness.relativePath);
   const response = await app.handle(request);
   expect(response.status).toBe(200);
   const bodyAsText = await response.text();

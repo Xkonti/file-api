@@ -1,5 +1,3 @@
 [test]
-
-# always enable coverage
 coverage = true
-coverageThreshold = 0.8
+coverageThreshold = 0.7

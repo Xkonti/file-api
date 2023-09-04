@@ -6,6 +6,7 @@ export class RequestBuilder {
   private method: RequestInit['method'] = 'GET';
   private urlBuilder: UrlBuilder;
   private apiKeyHeader = true;
+  private body: BodyInit | null = null;
 
   constructor(url: string | URL | UrlBuilder) {
     if (typeof url === 'string' || url instanceof URL) {
@@ -45,6 +46,14 @@ export class RequestBuilder {
   }
 
   /**
+   * Sets the request body.
+   */
+  setBody(body: BodyInit) {
+    this.body = body;
+    return this;
+  }
+
+  /**
    * Out out the `apikey` header.
    */
   excludeApiKey() {
@@ -66,10 +75,10 @@ export class RequestBuilder {
    */
   build() {
     let url = this.urlBuilder.build();
-    if (url === '') url = 'hello.jpg';
     const request = new Request(url, {
       method: this.method,
       headers: this.headers,
+      body: this.body,
     });
 
     if (this.apiKeyHeader) {

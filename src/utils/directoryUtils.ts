@@ -1,5 +1,5 @@
 import {join} from 'path';
-import {readdir} from 'fs/promises';
+import {mkdir, readdir, stat} from 'fs/promises';
 import {Dirent} from 'fs';
 
 export type DirectoryEntry = {
@@ -8,6 +8,42 @@ export type DirectoryEntry = {
   type: 'dir' | 'file';
   contents?: DirectoryEntry[];
 };
+
+/**
+ * Checks if a directory exists.
+ * @param directoryPath Path to the directory.
+ */
+export async function checkIfDirectoryExists(directoryPath: PathLike): Promise<boolean> {
+  try {
+    const stats = await stat(directoryPath);
+    return stats.isDirectory();
+  } catch (err) {
+    if ((err as {code: string}).code === 'ENOENT') {
+      return false;
+    } else {
+      throw err;
+    }
+  }
+}
+
+/**
+ * Creates a directory at the specified path. If the directory already exists, it does nothing.
+ * @param directoryPath Path to the directory to be created.
+ */
+export async function createDirectory(directoryPath: PathLike): Promise<boolean> {
+  // Check if the path is pointing to a file
+  try {
+    const stats = await stat(directoryPath);
+    if (stats.isFile()) {
+      return false;
+    }
+  } catch (err) {
+    // Just continue if the file does not exist
+  }
+
+  const success = await mkdir(directoryPath, {recursive: true});
+  return success != null;
+}
 
 /**
  * Reads the contents of a directory and returns a list of directory entries in a tree structure.
@@ -44,7 +80,7 @@ export async function readDirectoryContents(
 
     // If the entry is a directory and we are not at the maximum depth
     // then we need to recursively read the contents of the directory
-    let contents = undefined;
+    let contents: DirectoryEntry[] | string = [];
     if (isDirectory && depth > 1) {
       contents = await readDirectoryContents(join(directoryPath, entry.name), fullPath, depth - 1);
       // If contents are of type string, then we have an error
@@ -57,7 +93,7 @@ export async function readDirectoryContents(
       name: entry.name,
       fullPath: join(relativePath, entry.name),
       type: isDirectory ? 'dir' : 'file',
-      contents,
+      contents: isDirectory ? contents : undefined,
     });
   }
 
@@ -73,7 +109,7 @@ export function flattenFiles(entries: DirectoryEntry[], excludeDirs: boolean): D
   return entries.reduce((acc: DirectoryEntry[], curr: DirectoryEntry) => {
     if (curr.type === 'file') {
       return [...acc, curr];
-    } else if (curr.type === 'dir' && curr.contents) {
+    } else if (curr.type === 'dir' && curr.contents != null) {
       if (!excludeDirs) {
         const currentNoContents = {
           name: curr.name,

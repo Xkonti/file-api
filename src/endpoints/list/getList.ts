@@ -1,24 +1,21 @@
-import {join} from 'path';
 import {flattenFiles, readDirectoryContents} from '../../utils/directoryUtils';
 import Elysia from 'elysia';
-import {getConfig} from '../../utils/config';
-import {isPathValid} from '../../utils/pathUtils';
+import {validateRelativePath} from '../../utils/pathUtils';
 
 export function addGetListEndpoint(app: Elysia) {
   return app.get('list', async ({query, set}) => {
     // Verify that the path is valid
-    let relativePath = query.path ? (query.path as string) : null;
-    if (!isPathValid(relativePath)) {
+    const validationResult = await validateRelativePath(query.path);
+    if (validationResult.isErr()) {
       set.status = 400;
-      return 'You must provide a valid path to a directory';
+      return validationResult.error;
     }
-    relativePath = relativePath as string;
+    const {relativePath, absolutePath} = validationResult.value;
 
     const includeDirectories = query.dirs === 'true';
     const depth = query.depth === undefined ? 1 : parseInt(query.depth as string);
-    const directoryPath = join(getConfig().dataDir, relativePath);
 
-    const entries = await readDirectoryContents(directoryPath, relativePath, depth);
+    const entries = await readDirectoryContents(absolutePath, relativePath, depth);
 
     // Handle the occurrence of an error
     if (typeof entries === 'string') {
