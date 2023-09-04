@@ -60,7 +60,7 @@ afterEach(async () => {
   await destroyTestFileSystem();
 });
 
-describe.only('Upload file', () => {
+describe('Upload file', () => {
   test.each(getPermutations(['', null], [false, true], ['form-data', 'raw']))(
     'should return 400 when path is empty',
     async (path, override, transferMethod) => {
