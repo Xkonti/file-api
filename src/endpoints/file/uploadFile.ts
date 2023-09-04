@@ -8,6 +8,10 @@ import {
   unsupportedContentTypeMsg,
   uploadErrorMsg,
   fileMustNotEmptyMsg,
+  unsupportedBinaryDataTypeMsg,
+  invalidFileFormatInFormDataMsg,
+  noFileFieldInFormDataMsg,
+  invalidFormDataStructure,
 } from '../../constants/commonResponses';
 import {Result, ok, err} from 'neverthrow';
 
@@ -36,12 +40,18 @@ export function addUploadFileEndpoint(app: Elysia) {
 
     // Get file contents
     const contentType = getMediaType(headers);
-    const fileContentsResult = getFileContents(contentType, body);
+    const fileContentsResult = await getFileContents(contentType, body);
     if (fileContentsResult.isErr()) {
-      if (fileContentsResult.error === unsupportedContentTypeMsg) {
-        set.status = 415;
-      } else {
-        set.status = 400;
+      switch (fileContentsResult.error) {
+        case unsupportedContentTypeMsg:
+          set.status = 415;
+          break;
+        case unsupportedBinaryDataTypeMsg:
+        case invalidFileFormatInFormDataMsg:
+          set.status = 422;
+          break;
+        default:
+          set.status = 400;
       }
       return fileContentsResult.error;
     }
@@ -89,17 +99,54 @@ function getMediaType(headers: Record<string, string | null>): string {
  * @param body The request body
  * @returns The contents of the file or an error message
  */
-function getFileContents(contentType: string, body: unknown): Result<Blob, string> {
+async function getFileContents(contentType: string, body: unknown): Promise<Result<Blob, string>> {
   let fileContents: Blob;
   switch (contentType) {
     // Binary stream
-    case 'application/octet-stream':
-      fileContents = body as Blob;
+    case 'application/octet-stream': {
+      if (body instanceof Blob) {
+        fileContents = body;
+      } else if (body instanceof ArrayBuffer) {
+        fileContents = new Blob([body]);
+      } else if (body instanceof Uint8Array) {
+        fileContents = new Blob([body.buffer]);
+      } else if (typeof Buffer !== 'undefined' && Buffer.isBuffer(body)) {
+        // Node.js Buffer
+        fileContents = new Blob([body]);
+      } else {
+        return err(unsupportedBinaryDataTypeMsg);
+      }
       break;
+    }
 
     // Form data
     case 'multipart/form-data': {
-      fileContents = (body as Record<string, any>).file as Blob;
+      if (typeof body === 'object' && body !== null) {
+        if ('file' in body) {
+          const potentialFile = body.file;
+          if (potentialFile instanceof Blob) {
+            fileContents = potentialFile;
+          } else if (potentialFile instanceof Buffer) {
+            fileContents = new Blob([potentialFile]);
+          } else if (
+            potentialFile &&
+            typeof potentialFile === 'object' &&
+            'stream' in potentialFile &&
+            potentialFile.stream &&
+            typeof potentialFile.stream === 'object' &&
+            'pipe' in potentialFile.stream &&
+            typeof potentialFile.stream.pipe === 'function'
+          ) {
+            return err('Streams are not supported yet');
+          } else {
+            return err(invalidFileFormatInFormDataMsg);
+          }
+        } else {
+          return err(noFileFieldInFormDataMsg);
+        }
+      } else {
+        return err(invalidFormDataStructure);
+      }
       break;
     }
 
@@ -109,7 +156,7 @@ function getFileContents(contentType: string, body: unknown): Result<Blob, strin
   }
 
   // Check if the file is empty
-  if (fileContents.size === 0) {
+  if (fileContents.size == null || fileContents.size === 0) {
     return err(fileEmptyMsg);
   }
 

@@ -9,6 +9,10 @@ export const fileEmptyMsg = 'The file is empty';
 export const fileMustNotEmptyMsg = 'File contents cannot be empty';
 export const provideValidPathMsg = 'You must provide a valid path to a file';
 export const unsupportedContentTypeMsg = 'Unsupported content type';
+export const unsupportedBinaryDataTypeMsg = 'Unsupported binary data type';
+export const invalidFileFormatInFormDataMsg = 'Invalid file format in form data';
+export const noFileFieldInFormDataMsg = 'No file field in form data';
+export const invalidFormDataStructure = 'Invalid structure for multipart/form-data';
 
 // Internal server errors
 export const dirCreateFailMsg = 'Could not create directory';
