@@ -80,7 +80,7 @@ export function addUploadFileEndpoint(app: Elysia) {
  */
 function getMediaType(headers: Record<string, string | null>): string {
   // Default to invalid content type to prevent mishaps
-  return headers['content-type']?.split(';')[0] ?? '';
+  return headers['content-type']?.split(';')[0].trim().toLowerCase() ?? '';
 }
 
 /**
