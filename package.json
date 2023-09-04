@@ -7,12 +7,12 @@
     "prod": "bun run src/index.ts"
   },
   "dependencies": {
-    "elysia": "latest",
+    "elysia": "^0.6.16",
     "neverthrow": "^6.0.0",
     "rimraf": "^5.0.1"
   },
   "devDependencies": {
-    "bun-types": "^0.7.3"
+    "bun-types": "^0.8.1"
   },
   "module": "src/index.js"
 }
