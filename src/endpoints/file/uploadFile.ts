@@ -19,68 +19,82 @@ import {Result, ok, err} from 'neverthrow';
  * Add the endpoint for uploading a file.
  */
 export function addUploadFileEndpoint(app: Elysia) {
-  return app.post('file', async ({body, headers, query, set}) => {
-    // Verify and process the relative path
-    const pathValidationResult = validateRelativePath(query.path);
-    if (pathValidationResult.isErr()) {
-      set.status = 400;
-      return pathValidationResult.error;
-    }
-    const {absolutePath} = pathValidationResult.value;
+  return app.post(
+    'file',
+    async ({body, headers, query, set}) => {
+      // Verify and process the relative path
+      const pathValidationResult = validateRelativePath(query.path);
+      if (pathValidationResult.isErr()) {
+        set.status = 400;
+        return pathValidationResult.error;
+      }
+      const {absolutePath} = pathValidationResult.value;
 
-    // Check if the file should be overwritten if one exists already
-    const overwrite = (query.overwrite ?? 'false') === 'true';
+      // Check if the file should be overwritten if one exists already
+      const overwrite = (query.overwrite ?? 'false') === 'true';
 
-    // Check if file exists
-    const existingFile = await getFile(absolutePath);
-    if (existingFile && !overwrite) {
-      set.status = 409;
-      return fileAlreadyExistsMsg;
-    }
+      // Check if file exists
+      const existingFile = await getFile(absolutePath);
+      if (existingFile && !overwrite) {
+        set.status = 409;
+        return fileAlreadyExistsMsg;
+      }
 
-    // Get file contents
-    const contentType = getMediaType(headers);
-    const fileContentsResult = await getFileContents(contentType, body);
-    if (fileContentsResult.isErr()) {
-      switch (fileContentsResult.error) {
+      // Get file contents
+      const contentType = getMediaType(headers);
+      const fileContentsResult = await getFileContents(contentType, body);
+      if (fileContentsResult.isErr()) {
+        switch (fileContentsResult.error) {
+          case unsupportedContentTypeMsg:
+            set.status = 415;
+            break;
+          case unsupportedBinaryDataTypeMsg:
+          case invalidFileFormatInFormDataMsg:
+            set.status = 422;
+            break;
+          default:
+            set.status = 400;
+        }
+        return fileContentsResult.error;
+      }
+
+      // Write the file
+      const writeResult = await writeFile(absolutePath, fileContentsResult.value, overwrite);
+
+      if (writeResult.isOk()) {
+        set.status = 201;
+        return fileUploadSuccessMsg;
+      }
+
+      // Handle errors
+      switch (writeResult.error) {
+        case fileAlreadyExistsMsg:
+          set.status = 409;
+          break;
+        case fileMustNotEmptyMsg:
+          set.status = 400;
+          break;
         case unsupportedContentTypeMsg:
           set.status = 415;
           break;
-        case unsupportedBinaryDataTypeMsg:
-        case invalidFileFormatInFormDataMsg:
-          set.status = 422;
-          break;
         default:
-          set.status = 400;
+          set.status = 500;
+          return uploadErrorMsg;
       }
-      return fileContentsResult.error;
-    }
+      return writeResult.error;
+    },
+    {
+      // Add custom parser for application/json data
+      // We don't want Elysia.js to parse it automatically as JSON.
+      parse: async ({request, headers}) => {
+        const contentType = getMediaType(headers);
 
-    // Write the file
-    const writeResult = await writeFile(absolutePath, fileContentsResult.value, overwrite);
-
-    if (writeResult.isOk()) {
-      set.status = 201;
-      return fileUploadSuccessMsg;
-    }
-
-    // Handle errors
-    switch (writeResult.error) {
-      case fileAlreadyExistsMsg:
-        set.status = 409;
-        break;
-      case fileMustNotEmptyMsg:
-        set.status = 400;
-        break;
-      case unsupportedContentTypeMsg:
-        set.status = 415;
-        break;
-      default:
-        set.status = 500;
-        return uploadErrorMsg;
-    }
-    return writeResult.error;
-  });
+        if (contentType === 'application/json') {
+          return await request.text();
+        }
+      },
+    },
+  );
 }
 
 /**
