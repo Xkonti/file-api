@@ -36,7 +36,7 @@ export async function writeFile(
   overwrite: boolean,
 ): Promise<Result<boolean, string>> {
   // Check if contents is empty
-  if (contents.size === 0) {
+  if (contents.size == null || contents.size === 0) {
     return err(fileMustNotEmptyMsg);
   }
 

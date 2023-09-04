@@ -7,6 +7,7 @@ import {
   fileUploadSuccessMsg,
   unsupportedContentTypeMsg,
   uploadErrorMsg,
+  fileMustNotEmptyMsg,
 } from '../../constants/commonResponses';
 import {Result, ok, err} from 'neverthrow';
 
@@ -58,7 +59,7 @@ export function addUploadFileEndpoint(app: Elysia) {
       case fileAlreadyExistsMsg:
         set.status = 409;
         break;
-      case fileEmptyMsg:
+      case fileMustNotEmptyMsg:
         set.status = 400;
         break;
       case unsupportedContentTypeMsg:
