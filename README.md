@@ -41,9 +41,9 @@ Each HTTP request will be first checked for API key. If the API key is not provi
 
 ### List files and directories in a directory
 
-You can list files and/or directories by using the `/list` endpoint with the following parameters:
+You can list files and/or directories by using the `GET /list` endpoint with the following parameters:
 
-- `path` - the path of the directory to list (remember to encode it)
+- `path` - the path of the directory to list (remember to url-encode it)
 - `dirs` - whether to include directories or not (default: `false`). If directories are listed their contents will be nested.
 - `depth` - how deep to list directories. The default `1` will list only files and directories within the specified directory - no contents of subdirectories will be listed.
 
@@ -185,9 +185,9 @@ You can list files and/or directories by using the `/list` endpoint with the fol
 
 ### Download a file
 
-You can download a specific file by using the `/file` endpoint with the following parameters:
+You can download a specific file by using the `GET /file` endpoint with the following parameters:
 
-- `path` - the path of the file to download (remember to encode it)
+- `path` - the path of the file to download (remember to url-encode it)
 
 If the file does not exist or a path is pointing to a directory, a `404 Not Found` response will be returned.
 
@@ -195,6 +195,36 @@ If the file does not exist or a path is pointing to a directory, a `404 Not Foun
   <summary>Examples [click to expand]</summary>
 
 - `curl --request GET --url 'http://localhost:3000/file?path=%2FExpenses%202022.xlsx'` - download the `Expenses 2022.xlsx` file (`%2FExpenses%202022.xlsx` is the encoded `/Expenses 2022.xlsx`)
+</details>
+
+### Upload a file
+
+You can upload a specific file by using the `POST /file` endpoint with the following parameters:
+
+- `path` - the destination path of the file to upload (remember to url-encode it)
+- `overwrite` - whether to overwrite the file if it already exists (default: `false`)
+
+All the parent directories of the destination path will be created automatically if they do not exist.
+
+The file contents should be sent in the request body in one of the following ways:
+
+- `multipart/form-data` - the file contents should be sent as a `file` field
+- `application/octet-stream` - the file contents should be sent as the request body
+
+Possible responses:
+
+- `201` - the file was uploaded successfully
+- `400` - the request was malformed in some way:
+  - the `path` parameter is missing
+  - the `path` parameter is pointing to a directory
+  - the file contents are missing
+- `415` - unsupported content type
+- `422` - unrecognized file contents format
+
+<details>
+  <summary>Examples [click to expand]</summary>
+
+- `curl --request POST --url 'http://localhost:3000/file?path=%2FExpenses%202022.xlsx' --header 'Content-Type: application/octet-stream' --data-binary @/path/to/file` - upload the `Expenses 2022.xlsx` file (`%2FExpenses%202022.xlsx` is the encoded `/Expenses 2022.xlsx`)
 </details>
 
 ## Roadmap
@@ -214,7 +244,7 @@ If the file does not exist or a path is pointing to a directory, a `404 Not Foun
 
 - [ ] Check if a file exists: `GET /file/exists`
 - [x] Download a file: `GET /file`
-- [ ] Upload a file: `POST /file`
+- [x] Upload a file: `POST /file`
 - [ ] Delete a file: `DELETE /file`
 - [ ] Create an empty file: `POST /file/touch`
 - [ ] Rename a file: `POST /file/rename`
