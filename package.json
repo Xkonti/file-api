@@ -7,7 +7,7 @@
     "prod": "bun run src/index.ts"
   },
   "dependencies": {
-    "elysia": "^0.6.16",
+    "elysia": "^0.6.17",
     "neverthrow": "^6.0.0",
     "rimraf": "^5.0.1"
   },
