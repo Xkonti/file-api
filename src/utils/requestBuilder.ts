@@ -6,6 +6,7 @@ export class RequestBuilder {
   private method: RequestInit['method'] = 'GET';
   private urlBuilder: UrlBuilder;
   private apiKeyHeader = true;
+  private body: BodyInit | null = null;
 
   constructor(url: string | URL | UrlBuilder) {
     if (typeof url === 'string' || url instanceof URL) {
@@ -41,6 +42,14 @@ export class RequestBuilder {
    */
   setHeader(key: string, value: string) {
     this.headers.set(key, value);
+    return this;
+  }
+
+  /**
+   * Sets the request body.
+   */
+  setBody(body: BodyInit) {
+    this.body = body;
     return this;
   }
 
