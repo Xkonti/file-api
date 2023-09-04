@@ -75,7 +75,6 @@ export class RequestBuilder {
    */
   build() {
     let url = this.urlBuilder.build();
-    if (url === '') url = 'hello.jpg';
     const request = new Request(url, {
       method: this.method,
       headers: this.headers,
