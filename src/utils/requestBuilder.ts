@@ -79,6 +79,7 @@ export class RequestBuilder {
     const request = new Request(url, {
       method: this.method,
       headers: this.headers,
+      body: this.body,
     });
 
     if (this.apiKeyHeader) {
