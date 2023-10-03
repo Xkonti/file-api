@@ -3,9 +3,8 @@ import {isPathValid} from '../../utils/pathUtils';
 import {getConfig} from '../../utils/config';
 import {join} from 'path';
 import {getFile} from '../../utils/fileUtils';
-import { STATUS_CODES } from 'http';
 
-export function fileExistenceCheckEndpoint(app: Elysia) {
+export function addCheckFileExistsEndpoint(app: Elysia) {
   return app.get('file/exists', async ({query, set}) => {
     // Verify that the path is valid
     let relativePath = query.path ? (query.path as string) : null;

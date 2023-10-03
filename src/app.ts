@@ -4,7 +4,7 @@ import {addApiKeyGuard} from './endpoints/guards';
 import {addErrorHandling} from './endpoints/errors';
 import {addGetFileEndpoint} from './endpoints/file/getFile';
 import {addUploadFileEndpoint} from './endpoints/file/uploadFile';
-import {fileExistenceCheckEndpoint} from './endpoints/file/fileExistenceCheck';
+import {addCheckFileExistsEndpoint} from './endpoints/file/checkFileExists';
 
 export function buildApp() {
   let app = new Elysia();
@@ -17,6 +17,6 @@ export function buildApp() {
   addGetListEndpoint(app);
   addGetFileEndpoint(app);
   addUploadFileEndpoint(app);
-  fileExistenceCheckEndpoint(app);
+  addCheckFileExistsEndpoint(app);
   return app;
 }
