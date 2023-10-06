@@ -7,7 +7,7 @@ import { fileAlreadyExistsMsg } from '../../constants/commonResponses'
 
 
 export function addCopyFileEndpoint(app: Elysia) {
-  return app.get('file/copy', async ({ query, set }) => {
+  return app.post('file/copy', async ({ query, set }) => {
 
     // Verify that the SOURCE file path is valid
     let relativeSourcePath = query.source ? (query.source as string) : null;
