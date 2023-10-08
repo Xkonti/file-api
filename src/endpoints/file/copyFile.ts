@@ -1,22 +1,24 @@
 import Elysia from 'elysia';
-import { isPathValid } from '../../utils/pathUtils';
-import { getConfig } from '../../utils/config';
-import { join } from 'path';
-import { getFile, writeFile } from '../../utils/fileUtils';
-import { fileAlreadyExistsMsg } from '../../constants/commonResponses'
-
+import { validateRelativePath } from '../../utils/pathUtils';
+import { copyFile } from '../../utils/fileUtils';
+import {
+  invalidOverwriteFlagMsg,
+  invalidSourcePathMsg,
+  invalidDestinationPathMsg,
+  sourceFileDoesNotExistOrIsADirectoryMsg,
+  destinationFileExistsAndOverwriteIsNotSetMsg
+} from '../../constants/commonResponses'
 
 export function addCopyFileEndpoint(app: Elysia) {
   return app.post('file/copy', async ({ query, set }) => {
 
     // Verify that the SOURCE file path is valid
-    let relativeSourcePath = query.source ? (query.source as string) : null;
+    let relativeSourcePath = query.source ? (query.source as string) : "";
 
     // Get the DESTINATION file path
-    let relativeDestinationPath = query.destination ? (query.destination as string) : null;
+    let relativeDestinationPath = query.destination ? (query.destination as string) : "";
 
     let overwrite = false;
-
     if (query.overwrite) {
       if (query.overwrite === "true")
         overwrite = true;
@@ -24,56 +26,45 @@ export function addCopyFileEndpoint(app: Elysia) {
         overwrite = false;
       else {
         set.status = 400;
-        return 'Overwrite must be one of "true" and "false"';
+        return invalidOverwriteFlagMsg;
       }
     }
 
-
-    if (!isPathValid(relativeSourcePath)) {
+    const sourcePathValidationResult = validateRelativePath(relativeSourcePath);
+    if (sourcePathValidationResult.isErr()) {
       set.status = 400;
-      return 'Source file path is invalid';
+      return invalidSourcePathMsg;
     }
+    const absoluteSourcePath = sourcePathValidationResult.value.absolutePath;
 
-    if (!isPathValid(relativeDestinationPath)) {
+    const destinationPathValidationResult = validateRelativePath(relativeDestinationPath);
+    if (destinationPathValidationResult.isErr()) {
       set.status = 400;
-      return 'Relative destination path is invalid';
+      return invalidDestinationPathMsg;
     }
+    const absoluteDestinationPath = destinationPathValidationResult.value.absolutePath;
+    
 
-    relativeSourcePath = relativeSourcePath as string;
-
-    relativeDestinationPath = relativeDestinationPath as string;
-
-    // Get the full path to the SOURCE file
-    const sourceFilePath = join(getConfig().dataDir, relativeSourcePath);
-
-    // Get the full path to the DESTINATION file
-    const destinationFilePath = join(getConfig().dataDir, relativeDestinationPath);
-
-    var file = null;
-    try {
-      // Get source file
-      file = await getFile(sourceFilePath);
-      if (file === null) {
-        set.status = 404;
-        return 'Source file does not exist or is a directory';
-      }
-    } catch (error) {
-      set.status = 500;
-      return "There was an error when reading the source file";
-    }
-    const fileWriteResult = await writeFile(destinationFilePath, file, overwrite);
-    if (fileWriteResult.isOk()) {
-      return Response(null, { status: 204 });
+    let copyResult = await copyFile(absoluteSourcePath, absoluteDestinationPath, overwrite);
+    if (copyResult.isOk()) {
+      return Response("", { status: 204 });
     }
     else {
-      if (fileWriteResult.error == fileAlreadyExistsMsg) {
-        set.status = 409;
-        return "File exists and overwrite is not set";
+      switch (copyResult.error) {
+        case sourceFileDoesNotExistOrIsADirectoryMsg: {
+          set.status = 404;
+          break;
+        }
+        case destinationFileExistsAndOverwriteIsNotSetMsg: {
+          set.status = 409;
+          break;
+        }
+        default: {
+          set.status = 500;
+          break;
+        }
       }
-      else {
-        set.status = 500;
-        return `An error occurred while copying the file ${fileWriteResult.error}`;
-      }
+      return copyResult.error;
     }
   });
 }

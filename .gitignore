@@ -41,3 +41,8 @@ yarn-error.log*
 package-lock.json
 **/*.bun
 idea/
+
+# utility script to rebuild docker
+# image and restart the API after
+# changes to code
+/runner-script.sh

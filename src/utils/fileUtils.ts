@@ -2,9 +2,11 @@ import {BunFile} from 'bun';
 import Bun from 'bun';
 import {Result, err, ok} from 'neverthrow';
 import {
+  destinationFileExistsAndOverwriteIsNotSetMsg,
   dirCreateFailMsg,
   fileAlreadyExistsMsg,
   fileMustNotEmptyMsg,
+  sourceFileDoesNotExistOrIsADirectoryMsg,
   unknownErrorMsg,
 } from '../constants/commonResponses';
 import {dirname} from 'path';
@@ -61,4 +63,48 @@ export async function writeFile(
     }
     return err(unknownErrorMsg);
   }
+}
+
+/**
+ * Copies the file specified by {@link absoluteSourcePath} 
+ * to the path specified by {@link absoluteDestinationPath}. 
+ * Creates the directories specified by {@link absoluteDestinationPath}
+ * if they do not exist.
+ * @param absoluteSourcePath The absolute path to the source file.
+ * @param absoluteDestinationPath The absolute path to the destination file.
+ * @param overwrite Whether to overwrite the file at the destination
+ *                  path if there is one already.
+ * @returns Returns true if the file was written successfully, 
+ *          or an error message string if there was an error.
+ */
+export async function copyFile(
+  absoluteSourcePath: string,
+  absoluteDestinationPath: string,
+  overwrite: boolean
+) : Promise<Result<boolean, string>> {
+  let sourceFile = null;
+    try {
+
+      // Get source file
+      sourceFile = await getFile(absoluteSourcePath);
+
+      if (sourceFile === null) 
+        return err(sourceFileDoesNotExistOrIsADirectoryMsg);
+      
+    } catch (error) {
+      return err(`An error occurred while reading the source file (detail: ${error})`);
+    }
+
+    const fileWriteResult = await writeFile(absoluteDestinationPath, sourceFile, overwrite);
+    if (fileWriteResult.isOk()) {
+      return ok(true);
+    }
+    else {
+      if (fileWriteResult.error == fileAlreadyExistsMsg) {
+        return err(destinationFileExistsAndOverwriteIsNotSetMsg);
+      }
+      else {
+        return err(`An error occurred while copying the file (detail: ${fileWriteResult.error})`);
+      }
+    }
 }
