@@ -13,6 +13,14 @@ export const unsupportedBinaryDataTypeMsg = 'Unsupported binary data type';
 export const invalidFileFormatInFormDataMsg = 'Invalid file format in form data';
 export const noFileFieldInFormDataMsg = 'No file field in form data';
 export const invalidFormDataStructure = 'Invalid structure for multipart/form-data';
+export const invalidOverwriteFlagMsg = 'Parameter "overwrite" must be either "true" or "false"';
+
+// For operations involving a source and a destination
+// such as copy and move
+export const invalidSourcePathMsg = 'Invalid source file path';
+export const invalidDestinationPathMsg = 'Invalid destination file path';
+export const sourceFileDoesNotExistOrIsADirectoryMsg = 'Source file does not exist or is a directory';
+export const destinationFileExistsAndOverwriteIsNotSetMsg = 'Destination file exists and overwrite is not set';
 
 // Internal server errors
 export const dirCreateFailMsg = 'Could not create directory';
