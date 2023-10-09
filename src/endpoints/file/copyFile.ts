@@ -12,11 +12,19 @@ import {
 export function addCopyFileEndpoint(app: Elysia) {
   return app.post('file/copy', async ({ query, set }) => {
 
-    // Verify that the SOURCE file path is valid
-    let relativeSourcePath = query.source ? (query.source as string) : "";
+    const sourcePathValidationResult = validateRelativePath(query.source);
+    if (sourcePathValidationResult.isErr()) {
+      set.status = 400;
+      return invalidSourcePathMsg;
+    }
+    const sourcePath = sourcePathValidationResult.value;
 
-    // Get the DESTINATION file path
-    let relativeDestinationPath = query.destination ? (query.destination as string) : "";
+    const destinationPathValidationResult = validateRelativePath(query.destination);
+    if (destinationPathValidationResult.isErr()) {
+      set.status = 400;
+      return invalidDestinationPathMsg;
+    }
+    const destinationPath = destinationPathValidationResult.value;
 
     let overwrite = false;
     if (query.overwrite) {
@@ -30,22 +38,11 @@ export function addCopyFileEndpoint(app: Elysia) {
       }
     }
 
-    const sourcePathValidationResult = validateRelativePath(relativeSourcePath);
-    if (sourcePathValidationResult.isErr()) {
-      set.status = 400;
-      return invalidSourcePathMsg;
-    }
-    const absoluteSourcePath = sourcePathValidationResult.value.absolutePath;
+    let copyResult = await copyFile(
+      sourcePath.absolutePath,
+      destinationPath.absolutePath,
+      overwrite);
 
-    const destinationPathValidationResult = validateRelativePath(relativeDestinationPath);
-    if (destinationPathValidationResult.isErr()) {
-      set.status = 400;
-      return invalidDestinationPathMsg;
-    }
-    const absoluteDestinationPath = destinationPathValidationResult.value.absolutePath;
-    
-
-    let copyResult = await copyFile(absoluteSourcePath, absoluteDestinationPath, overwrite);
     if (copyResult.isOk()) {
       return Response("", { status: 204 });
     }
