@@ -8,6 +8,7 @@ export const fileAlreadyExistsMsg = 'The file already exists';
 export const fileEmptyMsg = 'The file is empty';
 export const fileMustNotEmptyMsg = 'File contents cannot be empty';
 export const provideValidPathMsg = 'You must provide a valid path to a file';
+export const provideValidPathDirMsg = 'You must provide a valid path to a directory';
 export const unsupportedContentTypeMsg = 'Unsupported content type';
 export const unsupportedBinaryDataTypeMsg = 'Unsupported binary data type';
 export const invalidFileFormatInFormDataMsg = 'Invalid file format in form data';

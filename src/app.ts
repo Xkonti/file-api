@@ -6,6 +6,7 @@ import {addGetFileEndpoint} from './endpoints/file/getFile';
 import {addUploadFileEndpoint} from './endpoints/file/uploadFile';
 import {addCheckFileExistsEndpoint} from './endpoints/file/checkFileExists';
 import {addGetFileSizeEndpoint} from './endpoints/file/getFileSize';
+import {addCheckDirExistsEndpoint} from './endpoints/dir/checkDirExists';
 
 export function buildApp() {
   let app = new Elysia();
@@ -20,5 +21,6 @@ export function buildApp() {
   addGetFileSizeEndpoint(app);
   addUploadFileEndpoint(app);
   addCheckFileExistsEndpoint(app);
+  addCheckDirExistsEndpoint(app);
   return app;
 }
