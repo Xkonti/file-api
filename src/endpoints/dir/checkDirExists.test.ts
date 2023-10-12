@@ -18,7 +18,7 @@ function buildDirRequest(path: string | null) {
 let app: ReturnType<typeof buildApp>;
 
 const directories = fs1TestDirectoryContents;
-const directoriesList = Object.keys(directories);
+const directoriesList = Object.keys(directories).filter(directory => !directory.includes('.'));
 const testDirectoryContents = fs1TestDirectoryContents;
 
 beforeEach(async () => {

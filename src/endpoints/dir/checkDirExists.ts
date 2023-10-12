@@ -11,7 +11,7 @@ export function addCheckDirExistsEndpoint(app: Elysia) {
     let relativePath = query.path ? (query.path as string) : null;
     if (!isPathValid(relativePath)) {
       set.status = 400;
-      return 'You must provide a valid path to the directory';
+      return provideValidPathDirMsg;
     }
     relativePath = relativePath as string;
 
