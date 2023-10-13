@@ -1,7 +1,5 @@
 import Elysia from 'elysia';
 import {validateRelativePath} from '../../utils/pathUtils';
-import {getConfig} from '../../utils/config';
-import {join} from 'path';
 import {checkIfDirectoryExists} from '../../utils/directoryUtils';
 import {dirNotExistsMsg, provideValidPathDirMsg} from '../../constants/commonResponses';
 
@@ -13,14 +11,12 @@ export function addCheckDirExistsEndpoint(app: Elysia) {
       set.status = 400;
       return provideValidPathDirMsg;
     }
-    const {relativePath} = dirPathValidationResult.value;
-
     // Get the full path to the directory
-    const dirPath = join(getConfig().dataDir, relativePath);
+    const {absolutePath} = dirPathValidationResult.value;
 
     try {
       // Get the directory
-      const dir = await checkIfDirectoryExists(dirPath);
+      const dir = await checkIfDirectoryExists(absolutePath);
       if (dir === false) {
         set.status = 404;
         return dirNotExistsMsg;
