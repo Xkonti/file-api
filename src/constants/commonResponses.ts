@@ -4,6 +4,7 @@ export const fileUploadSuccessMsg = 'File uploaded successfully';
 // Bad requests
 
 export const dirNotExistsMsg = 'The directory does not exist';
+export const dirAlreadyExistingMsg = 'The directory already exist';
 export const fileAlreadyExistsMsg = 'The file already exists';
 export const fileEmptyMsg = 'The file is empty';
 export const fileMustNotEmptyMsg = 'File contents cannot be empty';
