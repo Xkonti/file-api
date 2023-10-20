@@ -18,15 +18,15 @@ export function addDeleteFileEndpoint(app: Elysia) {
     }
     const {absolutePath} = pathValidationResult.value;
 
-    const test = await deleteFile(absolutePath);
+    const result = await deleteFile(absolutePath);
 
-    if (test.isOk()) {
+    if (result.isOk()) {
       set.status = 204;
       return fileDeleteSuccessMsg;
     }
 
     // Handle errors
-    switch (test.error) {
+    switch (result.error) {
       case operationNotPermittedMsg:
         set.status = 404;
         break;
@@ -37,6 +37,6 @@ export function addDeleteFileEndpoint(app: Elysia) {
         set.status = 500;
         return deleteErrorMsg;
     }
-    return test.error;
+    return result.error;
   });
 }

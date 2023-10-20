@@ -3,7 +3,10 @@ import {buildApp} from '../../app';
 import {RequestBuilder} from '../../utils/requestBuilder';
 import {UrlBuilder} from '../../utils/urlBuilder';
 import {createTestFileSystem, destroyTestFileSystem} from '../../testing/testFileSystem';
-import {fs1Files, fs1TestDirectoryContents} from '../../testing/constants';
+import {fs1Files, fs1TestDirectoryContents, testDirectory} from '../../testing/constants';
+import {getFile} from '../../utils/fileUtils';
+import {checkIfDirectoryExists} from '../../utils/directoryUtils';
+import {join} from 'path';
 
 function buildDeleteRequest(path: string | null) {
   let url = new UrlBuilder('http://localhost/file');
@@ -27,12 +30,16 @@ beforeEach(async () => {
 
 afterEach(async () => {
   await destroyTestFileSystem();
+  await new Promise(resolve => setTimeout(resolve, 1));
 });
 
 test('should delete the file if it exists', async () => {
   for (const fileDef of filesList) {
     const request = buildDeleteRequest(fileDef.relativePath);
     const response = await app.handle(request);
+    const absolutePath = fileDef.absolutePath;
+    const file = await getFile(absolutePath);
+    expect(file).toBeNull();
     expect(response.status).toBe(204);
   }
 });
@@ -59,4 +66,8 @@ test('should return a 404 if the path is not a file', async () => {
   const request = buildDeleteRequest('/TerryPratchett');
   const response = await app.handle(request);
   expect(response.status).toBe(404);
+
+  const filePath = join(testDirectory, 'TerryPratchett');
+  const directory = await checkIfDirectoryExists(filePath);
+  expect(directory).toBe(true);
 });
