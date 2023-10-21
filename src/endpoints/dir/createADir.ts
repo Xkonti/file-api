@@ -31,14 +31,9 @@ export function createADirEndpoint(app: Elysia) {
       }
 
       // Create the directory(ies)
-      console.log({relativePath});
-      await createDirectory(`.${relativePath}`);
-      //TODO:
-
+      await createDirectory(`${relativePath}`);
       set.status = 204;
       return '';
-      // set.status = 200;
-      // return query;
     } catch (error) {
       set.status = 400;
       return provideValidPathDirMsg;
