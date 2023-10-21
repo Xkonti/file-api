@@ -10,7 +10,6 @@ async function createDirectory(path: string) {
 
 export function createADirEndpoint(app: Elysia) {
   return app.post('dir', async ({query, set}) => {
-    console.log('query.path: ', query.path);
     // Verify that the path is valid
     const dirPathValidationResult = await validateRelativePath(query.path);
     if (dirPathValidationResult.isErr()) {
@@ -24,21 +23,17 @@ export function createADirEndpoint(app: Elysia) {
     try {
       // Get the directory
       const dir = await checkIfDirectoryExists(absolutePath);
-      console.log({absolutePath});
-      console.log({relativePath});
-      console.log({dir});
 
       // Abort if dir exists
       if (dir === true) {
-        console.log('direxist');
         set.status = 409;
         return dirAlreadyExistingMsg;
       }
 
       // Create the directory(ies)
-      console.log('newdircreated');
+
       await createDirectory(`${relativePath}`);
-      console.log('newdircreated');
+
       set.status = 204;
       return '';
     } catch (error) {
