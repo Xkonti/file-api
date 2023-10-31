@@ -35,6 +35,7 @@ export async function createTestFileSystem(contents: FileSystemConstructionEntry
 
 export async function destroyTestFileSystem() {
   await deleteTestDirectory();
+  await new Promise(resolve => setTimeout(resolve, 150));
 }
 
 export function generateDirectoryEntryCollections(
