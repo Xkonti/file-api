@@ -3,7 +3,7 @@ import {buildApp} from '../../app';
 import {RequestBuilder} from '../../utils/requestBuilder';
 import {UrlBuilder} from '../../utils/urlBuilder';
 import {createTestFileSystem, destroyTestFileSystem} from '../../testing/testFileSystem';
-import {fs1Files, fs1TestDirectoryContents, testDirectory} from '../../testing/constants';
+import {fs1Files, fs1TestDirectoryContents, illegalPaths, testDirectory} from '../../testing/constants';
 import {getFile} from '../../utils/fileUtils';
 import {checkIfDirectoryExists} from '../../utils/directoryUtils';
 import {join} from 'path';
@@ -51,15 +51,17 @@ test('should return a 400 if the path is empty', async () => {
 });
 
 test('should return a 400 if the path is invalid', async () => {
-  const request = buildDeleteRequest('/path/to/strange-paths');
-  const response = await app.handle(request);
-  expect(response.status).toBe(400);
+  for (const illegalPath of illegalPaths) {
+    const request = buildDeleteRequest(illegalPath);
+    const response = await app.handle(request);
+    expect(response.status).toBe(400);
+  }
 });
 
-test('should return a 400 if the file does not exist', async () => {
+test('should return a 404 if the file does not exist', async () => {
   const request = buildDeleteRequest('/path/to/strange-file.txt');
   const response = await app.handle(request);
-  expect(response.status).toBe(400);
+  expect(response.status).toBe(404);
 });
 
 test('should return a 404 if the path is not a file', async () => {
