@@ -3,7 +3,7 @@ import {addGetListEndpoint} from './endpoints/list/getList';
 import {addApiKeyGuard} from './endpoints/guards';
 import {addErrorHandling} from './endpoints/errors';
 import {addCheckDirExistsEndpoint} from './endpoints/dir/checkDirExists';
-import {createDirEndpoint} from './endpoints/dir/createDir';
+import {addCreateDirEndpoint} from './endpoints/dir/createDir';
 import {addCheckFileExistsEndpoint} from './endpoints/file/checkFileExists';
 import {addDeleteFileEndpoint} from './endpoints/file/deleteFile';
 import {addGetFileEndpoint} from './endpoints/file/getFile';
@@ -20,7 +20,7 @@ export function buildApp() {
   // Endpoints
   addCheckDirExistsEndpoint(app);
   addCheckFileExistsEndpoint(app);
-  createDirEndpoint(app);
+  addCreateDirEndpoint(app);
   addDeleteFileEndpoint(app);
   addGetFileEndpoint(app);
   addGetFileSizeEndpoint(app);

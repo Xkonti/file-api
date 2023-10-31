@@ -8,7 +8,7 @@ async function createDirectory(path: string) {
   await mkdir(path, {recursive: true});
 }
 
-export function createDirEndpoint(app: Elysia) {
+export function addCreateDirEndpoint(app: Elysia) {
   return app.post('dir', async ({query, set}) => {
     // Verify that the path is valid
     const dirPathValidationResult = await validateRelativePath(query.path);
