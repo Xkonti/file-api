@@ -2,12 +2,13 @@ import Elysia from 'elysia';
 import {addGetListEndpoint} from './endpoints/list/getList';
 import {addApiKeyGuard} from './endpoints/guards';
 import {addErrorHandling} from './endpoints/errors';
-import {addGetFileEndpoint} from './endpoints/file/getFile';
-import {addUploadFileEndpoint} from './endpoints/file/uploadFile';
-import {addCheckFileExistsEndpoint} from './endpoints/file/checkFileExists';
-import {addGetFileSizeEndpoint} from './endpoints/file/getFileSize';
 import {addCheckDirExistsEndpoint} from './endpoints/dir/checkDirExists';
+import {addCreateDirEndpoint} from './endpoints/dir/createDir';
+import {addCheckFileExistsEndpoint} from './endpoints/file/checkFileExists';
 import {addDeleteFileEndpoint} from './endpoints/file/deleteFile';
+import {addGetFileEndpoint} from './endpoints/file/getFile';
+import {addGetFileSizeEndpoint} from './endpoints/file/getFileSize';
+import {addUploadFileEndpoint} from './endpoints/file/uploadFile';
 
 export function buildApp() {
   let app = new Elysia();
@@ -17,12 +18,14 @@ export function buildApp() {
   addApiKeyGuard(app);
 
   // Endpoints
-  addGetListEndpoint(app);
+  addCheckDirExistsEndpoint(app);
+  addCheckFileExistsEndpoint(app);
+  addCreateDirEndpoint(app);
+  addDeleteFileEndpoint(app);
   addGetFileEndpoint(app);
   addGetFileSizeEndpoint(app);
+  addGetListEndpoint(app);
   addUploadFileEndpoint(app);
-  addDeleteFileEndpoint(app);
-  addCheckFileExistsEndpoint(app);
-  addCheckDirExistsEndpoint(app);
+
   return app;
 }
