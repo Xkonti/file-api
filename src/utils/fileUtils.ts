@@ -1,13 +1,13 @@
-import {BunFile} from 'bun';
-import Bun from 'bun';
+import Bun, {BunFile} from 'bun';
 import {Result, err, ok} from 'neverthrow';
+import {unlink} from 'node:fs/promises';
+import {dirname} from 'path';
 import {
   dirCreateFailMsg,
   fileAlreadyExistsMsg,
   fileMustNotEmptyMsg,
   unknownErrorMsg,
 } from '../constants/commonResponses';
-import {dirname} from 'path';
 import {checkIfDirectoryExists, createDirectory} from './directoryUtils';
 
 /**
@@ -54,6 +54,24 @@ export async function writeFile(
     }
     // Write the file
     await Bun.write(absolutePath, contents);
+    return ok(true);
+  } catch (error) {
+    if (error instanceof Error) {
+      return err(error.message);
+    }
+    return err(unknownErrorMsg);
+  }
+}
+
+/**
+ * Deletes a file from the specified path.
+ * @param path The path to the file.
+ * @returns Returns true if the file was deleted successfully, or a string if there was an error.
+ */
+
+export async function deleteFile(path: string): Promise<Result<boolean, string>> {
+  try {
+    await unlink(path);
     return ok(true);
   } catch (error) {
     if (error instanceof Error) {
